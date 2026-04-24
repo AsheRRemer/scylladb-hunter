@@ -1,0 +1,51 @@
+target_company: ScyllaDB
+
+sender:
+  name: "Asher Remer"
+  title: "GTM Engineer, ScyllaDB"
+
+pipeline:
+  max_leads: 20
+  min_score_threshold: 60
+  dry_run: true
+  message_types:
+    - linkedin_dm
+    - email
+
+scoring:
+  title_seniority_weight: 0.35
+  company_size_weight: 0.20
+  datastax_signal_weight: 0.40
+  activity_recency_weight: 0.05
+
+apollo:
+  api_key: ""  # or set APOLLO_API_KEY env var
+  organization_names:
+    - DataStax
+  titles:
+    - engineer
+    - architect
+    - infrastructure
+    - database
+    - backend
+    - CTO
+    - VP Engineering
+  seniorities:
+    - senior
+    - manager
+    - director
+    - vp
+    - c_suite
+    - entry
+
+data:
+  raw_pool: data/leads_raw_pool.json
+
+anthropic:
+  model: claude-haiku-4-5-20251001
+  max_tokens: 600
+
+output:
+  log_file: output/dry_run_log.json
+  report_file: output/report.html
+  db_file: output/leads.db

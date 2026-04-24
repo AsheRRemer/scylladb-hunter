@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ScyllaDB GTM Pipeline Report</title>
+  <style>
+    :root {
+      --primary: #e93b21;
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface-2: #2d3f55;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --green: #22c55e;
+      --yellow: #f59e0b;
+      --red: #ef4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .logo {
+      width: 36px; height: 36px;
+      background: var(--primary);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 15px; color: white; flex-shrink: 0;
+    }
+    header h1 { font-size: 1.1rem; font-weight: 600; }
+    header .generated { margin-left: auto; color: var(--text-muted); font-size: 0.8rem; }
+    .container { max-width: 1060px; margin: 0 auto; padding: 2rem 1.5rem; }
+    .funnel {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+    .funnel-stage {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem 1rem;
+      text-align: center;
+      position: relative;
+    }
+    .funnel-stage::after {
+      content: '→';
+      position: absolute;
+      right: -0.65rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      background: var(--bg);
+      padding: 0 2px;
+    }
+    .funnel-stage:last-child::after { display: none; }
+    .funnel-count {
+      font-size: 2.75rem;
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1;
+    }
+    .funnel-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-muted);
+      margin-top: 0.4rem;
+      font-weight: 600;
+    }
+    .funnel-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+    .section-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 1rem;
+    }
+    .lead-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+      transition: border-color 0.15s;
+    }
+    .lead-card:hover { border-color: var(--surface-2); }
+    .lead-header {
+      display: flex;
+      align-items: center;
+      padding: 1.1rem 1.25rem;
+      gap: 1rem;
+      cursor: pointer;
+      user-select: none;
+    }
+    .lead-header:hover { background: rgba(255,255,255,0.03); }
+    .score-badge {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 0.95rem;
+      flex-shrink: 0;
+    }
+    .lead-info { flex: 1; min-width: 0; }
+    .lead-name { font-weight: 600; font-size: 0.95rem; }
+    .lead-meta { color: var(--text-muted); font-size: 0.82rem; margin-top: 0.2rem; }
+    .lead-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.4rem; }
+    .tag {
+      padding: 0.15rem 0.55rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+    .tag-tech { background: rgba(233,59,33,0.12); color: #fc8673; }
+    .tag-signal { background: rgba(34,197,94,0.12); color: #4ade80; }
+    .tag-ds-alumni { background: rgba(168,85,247,0.12); color: #c084fc; }
+    .tag-active { background: rgba(251,191,36,0.12); color: #fbbf24; }
+    .expand-icon {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+    .expand-icon.open { transform: rotate(90deg); }
+    .lead-detail {
+      display: none;
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 1.25rem;
+    }
+    .lead-bio {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      font-style: italic;
+      margin-bottom: 1.25rem;
+      line-height: 1.7;
+    }
+    .score-breakdown {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .breakdown-item {
+      background: var(--surface-2);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      flex: 1;
+      min-width: 110px;
+    }
+    .breakdown-label {
+      font-size: 0.67rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+    }
+    .breakdown-value {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-top: 0.2rem;
+    }
+    .pain-section { margin-bottom: 1.25rem; }
+    .pain-section h4 {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.5rem;
+    }
+    .pain-list { list-style: none; }
+    .pain-list li {
+      font-size: 0.85rem;
+      color: var(--text);
+      padding: 0.3rem 0;
+      padding-left: 1rem;
+      position: relative;
+    }
+    .pain-list li::before {
+      content: '·';
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+      font-weight: 700;
+    }
+    .messages-section h4 {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.75rem;
+    }
+    .message-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.1rem;
+      margin-bottom: 0.75rem;
+    }
+    .message-type-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--primary);
+      margin-bottom: 0.6rem;
+    }
+    .message-text {
+      font-size: 0.85rem;
+      color: var(--text);
+      white-space: pre-wrap;
+      line-height: 1.75;
+    }
+    .no-messages { color: var(--text-muted); font-size: 0.85rem; font-style: italic; }
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      padding: 2rem;
+      border-top: 1px solid var(--border);
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">S</div>
+    <h1>ScyllaDB GTM Pipeline</h1>
+    <span class="generated">Generated 2026-04-24 10:33 UTC</span>
+  </header>
+
+  <div class="container">
+    <div class="funnel">
+      <div class="funnel-stage">
+        <div class="funnel-count">20</div>
+        <div class="funnel-label">Gathered</div>
+        <div class="funnel-sub">total leads loaded</div>
+      </div>
+      <div class="funnel-stage">
+        <div class="funnel-count">12</div>
+        <div class="funnel-label">Scored</div>
+        <div class="funnel-sub">leads evaluated</div>
+      </div>
+      <div class="funnel-stage">
+        <div class="funnel-count">7</div>
+        <div class="funnel-label">Selected</div>
+        <div class="funnel-sub">above threshold</div>
+      </div>
+      <div class="funnel-stage">
+        <div class="funnel-count">7</div>
+        <div class="funnel-label">Messaged</div>
+        <div class="funnel-sub">outreach sent</div>
+      </div>
+    </div>
+
+    <div class="section-title">All Leads — click to expand</div>
+    
+<div class="lead-card">
+  <div class="lead-header" onclick="toggleCard('card_0')">
+    <div class="score-badge" style="background:color-mix(in srgb,#22c55e 15%,transparent);border:2px solid #22c55e;color:#22c55e">
+      89
+    </div>
+    <div class="lead-info">
+      <div class="lead-name">Lin Zhao</div>
+      <div class="lead-meta">Principal Database Architect · Comcast · Philadelphia, PA</div>
+      <div class="lead-tags"><span class="tag tag-tech">DataStax Enterprise</span><span class="tag tag-tech">Cassandra</span><span class="tag tag-tech">Spark</span><span class="tag tag-tech">Azure</span><span class="tag tag-signal">DataStax customer</span><span class="tag tag-ds-alumni">DS alumni</span><span class="tag tag-active">recently active</span></div>
+    </div>
+    <span style="background:rgba(34,197,94,0.15);color:#4ade80;padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">messaged</span>
+    <div class="expand-icon" id="icon_card_0">▸</div>
+  </div>
+  <div class="lead-detail" id="card_0">
+    <p class="lead-bio">"Principal DB Architect at Comcast. Former DataStax Solutions Engineer — I know the product inside out. Now evaluating alternatives as our 2026 contract renewal approaches. Storage costs and compaction overhead are the main pain points."</p>
+    <div class="score-breakdown"><div class="breakdown-item"><div class="breakdown-label">Title</div><div class="breakdown-value">70</div></div><div class="breakdown-item"><div class="breakdown-label">Company Size</div><div class="breakdown-value">100</div></div><div class="breakdown-item"><div class="breakdown-label">DataStax Signal</div><div class="breakdown-value">100</div></div><div class="breakdown-item"><div class="breakdown-label">Recency</div><div class="breakdown-value">85</div></div></div>
+    <div class="pain-section"><h4>Pain Points</h4><ul class="pain-list"><li>DataStax contract renewal is coming — costs have grown 3x since 2019</li><li>Compaction management consuming significant engineering cycles</li><li>Former DataStax SE: I know exactly where the product falls short</li></ul></div>
+    <div class="messages-section"><h4>Generated Messages</h4><div class="message-card"><div class="message-type-label">Linkedin Dm</div><div class="message-text">Hi Lin,
+
+Given your DataStax renewal timeline and what you've likely seen firsthand on the product side—I thought this might be worth a quick conversation.
+
+We're working with teams at similar scale (Comcast included) who've cut their Cassandra infrastructure costs by 80–90% while actually *reducing* compaction overhead. The shard-per-core architecture eliminates the GC pauses and tuning burden you're probably managing now.
+
+Since you know where DSE falls short, you'd spot immediately whether this actually solves the storage amplification and engineering cycles eating your time.
+
+No migration needed—drop-in compatible with your existing stack.
+
+Would a quick 15-min call make sense to benchmark against your current setup?
+
+Lin</div></div><div class="message-card"><div class="message-type-label">Email</div><div class="message-text">Subject: Cassandra costs &amp; compaction — what we're seeing in 2026 renewals
+
+Hi Lin,
+
+I reached out because your situation is one we're seeing repeatedly: DataStax renewals hitting hard, and compaction management eating up engineering cycles that should go elsewhere.
+
+Given your background as a DataStax SE, you know exactly where the operational overhead lives. The JVM tuning, the compaction storms under write load, the per-node licensing stacking on top of infrastructure costs — that's the tax most teams don't realize they're paying until renewal time.
+
+We've worked with companies like Comcast running Cassandra at scale, and the pattern is consistent: a drop-in Cassandra replacement can cut node count by 80–90% while cutting compaction overhead in half. Same CQL, same drivers, no rewrite. But what matters for your 2026 decision is that the economics flip entirely — consumption-based licensing instead of per-node tax, and significantly lower storage amplification.
+
+I'm not going to oversell this. With your DataStax background, you'll spot the gaps fast. But if exploring a real alternative before renewal makes sense, I'd rather have a 15-minute conversation now than watch this drag into Q1.
+
+Are you open to a brief technical call sometime in the next week?
+
+Lin</div></div></div>
+  </div>
+</div>
+<div class="lead-card">
+  <div class="lead-header" onclick="toggleCard('card_1')">
+    <div class="score-badge" style="background:color-mix(in srgb,#22c55e 15%,transparent);border:2px solid #22c55e;color:#22c55e">
+      88
+    </div>
+    <div class="lead-info">
+      <div class="lead-name">Karan Mehta</div>
+      <div class="lead-meta">VP of Platform Engineering · T-Mobile · Bellevue, WA</div>
+      <div class="lead-tags"><span class="tag tag-tech">DataStax Enterprise</span><span class="tag tag-tech">Cassandra</span><span class="tag tag-tech">Kubernetes</span><span class="tag tag-tech">AWS</span><span class="tag tag-signal">DataStax customer</span><span class="tag tag-active">recently active</span></div>
+    </div>
+    <span style="background:rgba(34,197,94,0.15);color:#4ade80;padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">messaged</span>
+    <div class="expand-icon" id="icon_card_1">▸</div>
+  </div>
+  <div class="lead-detail" id="card_1">
+    <p class="lead-bio">"VP Platform Engineering at T-Mobile. DataStax Enterprise backs our subscriber data platform. 5G is tripling write throughput and our node count (and licensing bill) is scaling linearly."</p>
+    <div class="score-breakdown"><div class="breakdown-item"><div class="breakdown-label">Title</div><div class="breakdown-value">85</div></div><div class="breakdown-item"><div class="breakdown-label">Company Size</div><div class="breakdown-value">100</div></div><div class="breakdown-item"><div class="breakdown-label">DataStax Signal</div><div class="breakdown-value">85</div></div><div class="breakdown-item"><div class="breakdown-label">Recency</div><div class="breakdown-value">85</div></div></div>
+    <div class="pain-section"><h4>Pain Points</h4><ul class="pain-list"><li>5G subscriber growth tripling DataStax node count and licensing cost</li><li>Per-node licensing model becomes punishing at telco scale</li><li>Need Cassandra API compatibility — too many services to rewrite</li></ul></div>
+    <div class="messages-section"><h4>Generated Messages</h4><div class="message-card"><div class="message-type-label">Linkedin Dm</div><div class="message-text">Hey Karan,
+
+I've been following T-Mobile's 5G infrastructure challenges—tripling subscriber load while managing DataStax licensing at scale is a familiar pain point for telcos. 
+
+We work with companies in your position who've hit the per-node licensing wall. Most find they can consolidate 10 Cassandra nodes down to 1 without rewrites—your CQL and client libraries stay identical. The math changes fast when licensing stops scaling linearly with nodes.
+
+Given your Cassandra investment and AWS footprint, this could be worth 15 minutes to explore. No pitch, just a quick benchmark comparison on your actual subscriber data workload.
+
+Open to a brief call next week?</div></div><div class="message-card"><div class="message-type-label">Email</div><div class="message-text">Subject: 5G scale + DataStax licensing — alternative worth exploring
+
+Hi Karan,
+
+I've been following T-Mobile's 5G expansion, and I'm guessing your subscriber data platform is feeling the strain. Tripling node count with per-node licensing is a brutal equation at telco scale.
+
+Here's what caught my attention: we work with infrastructure teams running massive Cassandra deployments who faced the exact same problem. Most are surprised to learn they can replace 10 Cassandra nodes with 1 alternative—without touching a single line of application code.
+
+The magic is a different architecture. No JVM, no GC pauses, shard-per-core design that hits 1M+ ops/sec per node. More importantly for your situation: consumption-based pricing, not per-node licensing. That model changes the economics dramatically when you're scaling subscriber data at your volume.
+
+Since you're already on Cassandra with mature integrations, there's zero rewrite risk. Drop-in compatible, same CQL, same drivers.
+
+Worth a 20-minute conversation to see if this applies to your 5G growth problem? I can walk through a quick capacity comparison using your current node count.
+
+Best,
+[Your name]</div></div></div>
+  </div>
+</div>
+<div class="lead-card">
+  <div class="lead-header" onclick="toggleCard('card_2')">
+    <div class="score-badge" style="background:color-mix(in srgb,#22c55e 15%,transparent);border:2px solid #22c55e;color:#22c55e">
+      85
+    </div>
+    <div class="lead-info">
+      <div class="lead-name">Priya Nair</div>
+      <div class="lead-meta">Head of Infrastructure · Nubank · São Paulo, Brazil</div>
+      <div class="lead-tags"><span class="tag tag-tech">Cassandra</span><span class="tag tag-tech">DataStax</span><span class="tag tag-tech">Kafka</span><span class="tag tag-tech">Kubernetes</span><span class="tag tag-signal">DataStax customer</span><span class="tag tag-active">recently active</span></div>
+    </div>
+    <span style="background:rgba(34,197,94,0.15);color:#4ade80;padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">messaged</span>
+    <div class="expand-icon" id="icon_card_2">▸</div>
+  </div>
+  <div class="lead-detail" id="card_2">
+    <p class="lead-bio">"Head of Infrastructure at Nubank. We serve 90M+ customers across Latin America. Infrastructure cost efficiency is a board-level KPI. Cassandra underpins our core financial ledger."</p>
+    <div class="score-breakdown"><div class="breakdown-item"><div class="breakdown-label">Title</div><div class="breakdown-value">80</div></div><div class="breakdown-item"><div class="breakdown-label">Company Size</div><div class="breakdown-value">90</div></div><div class="breakdown-item"><div class="breakdown-label">DataStax Signal</div><div class="breakdown-value">85</div></div><div class="breakdown-item"><div class="breakdown-label">Recency</div><div class="breakdown-value">100</div></div></div>
+    <div class="pain-section"><h4>Pain Points</h4><ul class="pain-list"><li>Infrastructure cost is a board-level KPI — every dollar of DataStax licensing is scrutinized</li><li>Latency SLAs tightening as we expand into Mexico and Colombia</li><li>DataStax contract growing faster than customer growth</li></ul></div>
+    <div class="messages-section"><h4>Generated Messages</h4><div class="message-card"><div class="message-type-label">Linkedin Dm</div><div class="message-text">Hi Priya,
+
+Saw Nubank's expansion into Mexico and Colombia—impressive scale. Given your board-level focus on infrastructure costs and the tightening latency SLAs across regions, thought this might be worth a quick conversation.
+
+We've helped teams running Cassandra at scale cut infrastructure spend by 80–90% while hitting single-digit ms p99 latencies. The math is pretty compelling: replace 10 nodes with 1, plus no per-node licensing tax like you're experiencing with DataStax.
+
+Since you're already on Cassandra, there's no rewrite—it's a drop-in replacement. Several fintechs have migrated with zero downtime.
+
+Would be worth 15 minutes to walk through what this could look like for your ledger infrastructure?</div></div><div class="message-card"><div class="message-type-label">Email</div><div class="message-text">Subject: Cassandra economics at scale — what we're seeing at Latin American fintechs
+
+Hi Priya,
+
+I've been following Nubank's expansion into Mexico and Colombia — impressive growth trajectory for 90M+ customers. I imagine that's putting real pressure on your infrastructure costs, especially as DataStax licensing scales with nodes rather than actual usage.
+
+We work with several large Latin American fintechs running similar Cassandra workloads, and there's a pattern: they're replacing 10 Cassandra nodes with 1 drop-in alternative that cuts infrastructure spend by 80–90%, while cutting p99 latency to single-digit milliseconds (vs. your current 50–200ms). The kicker is the licensing model — consumption-based, not per-node, so your costs actually align with customer growth instead of outpacing it.
+
+Because it's 100% Cassandra-compatible, there's no app rewrite. A few have migrated with zero downtime.
+
+Given that infrastructure cost is a board-level KPI and latency SLAs are tightening, this might be worth 15 minutes. I can walk you through what we're seeing with similar-scale deployments and your specific GCP setup.
+
+Free?
+
+Best,
+[Your name]</div></div></div>
+  </div>
+</div>
+<div class="lead-card">
+  <div class="lead-header" onclick="toggleCard('card_3')">
+    <div class="score-badge" style="background:color-mix(in srgb,#22c55e 15%,transparent);border:2px solid #22c55e;color:#22c55e">
+      78
+    </div>
+    <div class="lead-info">
+      <div class="lead-name">Omar Al-Farsi</div>
+      <div class="lead-meta">Staff Platform Engineer · Netflix · Los Gatos, CA</div>
+      <div class="lead-tags"><span class="tag tag-tech">Cassandra</span><span class="tag tag-tech">DataStax</span><span class="tag tag-tech">Kafka</span><span class="tag tag-tech">Flink</span><span class="tag tag-signal">DataStax customer</span><span class="tag tag-active">recently active</span></div>
+    </div>
+    <span style="background:rgba(34,197,94,0.15);color:#4ade80;padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">messaged</span>
+    <div class="expand-icon" id="icon_card_3">▸</div>
+  </div>
+  <div class="lead-detail" id="card_3">
+    <p class="lead-bio">"Staff Engineer on Netflix Storage Platform. Managing one of the world's largest Cassandra deployments. Published internally on C++ storage alternatives. Data volumes tripled post-pandemic."</p>
+    <div class="score-breakdown"><div class="breakdown-item"><div class="breakdown-label">Title</div><div class="breakdown-value">60</div></div><div class="breakdown-item"><div class="breakdown-label">Company Size</div><div class="breakdown-value">90</div></div><div class="breakdown-item"><div class="breakdown-label">DataStax Signal</div><div class="breakdown-value">85</div></div><div class="breakdown-item"><div class="breakdown-label">Recency</div><div class="breakdown-value">100</div></div></div>
+    <div class="pain-section"><h4>Pain Points</h4><ul class="pain-list"><li>Operational burden of managing large Cassandra clusters is unsustainable at our scale</li><li>Compaction consuming disproportionate engineering effort</li><li>Evaluating C++ storage engines — JVM GC pauses are a known pain point</li></ul></div>
+    <div class="messages-section"><h4>Generated Messages</h4><div class="message-card"><div class="message-type-label">Linkedin Dm</div><div class="message-text">Hey Omar,
+
+Saw your internal piece on C++ storage alternatives—really resonated with me. Managing Netflix's scale on Cassandra is impressive, but I get why compaction and GC pauses are eating up your team's cycles.
+
+We've been working with teams at similar scale (Grab, Discord) who ditched the JVM entirely. Our shard-per-core architecture kills GC pauses and cuts compaction overhead by ~50%. The kicker: drop-in compatible with your existing setup—same CQL, same drivers, zero application rewrites.
+
+Given your data volumes tripled post-pandemic, the operational lift of Cassandra management probably only got worse. Would be worth a quick conversation on how we're helping storage teams reclaim engineering bandwidth.
+
+Free to grab 15 min this week?</div></div><div class="message-card"><div class="message-type-label">Email</div><div class="message-text">Subject: Cassandra compaction at Netflix scale — worth a conversation?
+
+Hi Omar,
+
+I've been following Netflix's published work on storage platform challenges, and your team's internal research on C++ alternatives caught my attention. Given the scale you're operating at, I thought it worth reaching out directly.
+
+We work with teams managing some of the world's largest Cassandra deployments (similar scale to yours), and they consistently point to two pain points that resonate:
+
+**1) Compaction overhead** — It's consuming disproportionate engineering cycles. Our customers typically see 50% reduction in compaction storms by moving to a reactive, shard-per-core architecture that's fundamentally different from JVM-based strategies.
+
+**2) GC pauses** — You've clearly identified this as a blocker. A C++ storage engine eliminates JVM pause variability entirely, which matters at your request volume.
+
+The practical piece: it's a drop-in Cassandra replacement. Same CQL, same drivers, same data model. Teams like Comcast and Grab did zero-downtime migrations without application rewrites.
+
+I'm not going to oversell this — whether it's a fit depends entirely on your current priorities and timeline. But if compaction overhead and GC latency are near the top of your list right now, a 20-minute conversation might be useful.
+
+Open to a quick call next week?
+
+Best,
+[Your name]</div></div></div>
+  </div>
+</div>
+<div class="lead-card">
+  <div class="lead-header" onclick="toggleCard('card_4')">
+    <div class="score-badge" style="background:color-mix(in srgb,#f59e0b 15%,transparent);border:2px solid #f59e0b;color:#f59e0b">
+      69
+    </div>
+    <div class="lead-info">
+      <div class="lead-name">Jake Morrison</div>
+      <div class="lead-meta">Senior Backend Engineer · eBay · San Jose, CA</div>
+      <div class="lead-tags"><span class="tag tag-tech">Cassandra</span><span class="tag tag-tech">DataStax Enterprise</span><span class="tag tag-tech">Kafka</span><span class="tag tag-tech">Java</span><span class="tag tag-signal">DataStax customer</span></div>
+    </div>
+    <span style="background:rgba(34,197,94,0.15);color:#4ade80;padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">messaged</span>
+    <div class="expand-icon" id="icon_card_4">▸</div>
+  </div>
+  <div class="lead-detail" id="card_4">
+    <p class="lead-bio">"Senior Backend Engineer at eBay working on the listings and catalog real-time data platform. DataStax Cassandra backing 2B+ active listings. Peak load during Q4 is brutal."</p>
+    <div class="score-breakdown"><div class="breakdown-item"><div class="breakdown-label">Title</div><div class="breakdown-value">50</div></div><div class="breakdown-item"><div class="breakdown-label">Company Size</div><div class="breakdown-value">90</div></div><div class="breakdown-item"><div class="breakdown-label">DataStax Signal</div><div class="breakdown-value">75</div></div><div class="breakdown-item"><div class="breakdown-label">Recency</div><div class="breakdown-value">70</div></div></div>
+    <div class="pain-section"><h4>Pain Points</h4><ul class="pain-list"><li>JVM GC pauses spiking during Q4 peak causing listing API latency</li><li>DataStax licensing cost scaling with listings volume growth</li></ul></div>
+    <div class="messages-section"><h4>Generated Messages</h4><div class="message-card"><div class="message-type-label">Linkedin Dm</div><div class="message-text">Hey Jake,
+
+Been following eBay's scale challenges—managing 2B+ listings with Q4 peak load is no joke. Curious if you're still battling JVM GC pauses during those spikes. We work with teams running similar catalog-scale workloads, and most find the GC issue pretty frustrating when latency matters.
+
+Quick context: we've seen teams cut Cassandra node counts by 80-90% while dropping p99 latency into single digits—no JVM tuning required. Plus, if DataStax licensing is scaling with your listing volume, there's usually meaningful savings there too.
+
+Would be worth a quick 15-min chat to see if it applies to your stack. No pitch—just comparing notes on what's working at scale.
+
+Free this week?</div></div><div class="message-card"><div class="message-type-label">Email</div><div class="message-text">Subject: Eliminating Q4 GC pauses for your listings platform
+
+Hi Jake,
+
+I've been following eBay's scale challenges with Cassandra—managing 2B+ listings across peak season is no small feat, especially when JVM GC pauses start tanking your listing API latency in Q4.
+
+We work with backend teams handling similar catalog-scale problems. The core issue is the JVM itself: garbage collection becomes a bottleneck the moment your traffic spikes. Most teams end up throwing more nodes at the problem, which compounds licensing costs.
+
+There's a simpler path. A few companies like Discord and Comcast replaced their Cassandra clusters with a C++ alternative that:
+
+1. **Eliminates GC pauses entirely** — shard-per-core architecture means no stop-the-world collections during peak load
+2. **Cuts infrastructure ~80–90%** — one node handles what takes 10 Cassandra nodes; plus, consumption-based licensing (no per-node tax like DataStax)
+
+It's a drop-in replacement for Cassandra. Same CQL, same drivers, zero application rewrites. Zero-downtime migration is standard.
+
+Given your Q4 timeline and cost pressures, might be worth a quick 20-min conversation to explore whether this fits your architecture.
+
+Open to a brief call next week?
+
+Cheers,
+[Your name]</div></div></div>
+  </div>
+</div>
+<div class="lead-card">
+  <div class="lead-header" onclick="toggleCard('card_5')">
+    <div class="score-badge" style="background:color-mix(in srgb,#f59e0b 15%,transparent);border:2px solid #f59e0b;color:#f59e0b">
+      66
+    </div>
+    <div class="lead-info">
+      <div class="lead-name">Wei Zhang</div>
+      <div class="lead-meta">Senior Infrastructure Engineer · Grab · Singapore</div>
+      <div class="lead-tags"><span class="tag tag-tech">DataStax Enterprise</span><span class="tag tag-tech">Cassandra</span><span class="tag tag-tech">Go</span><span class="tag tag-tech">Kafka</span><span class="tag tag-signal">DataStax customer</span></div>
+    </div>
+    <span style="background:rgba(34,197,94,0.15);color:#4ade80;padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">messaged</span>
+    <div class="expand-icon" id="icon_card_5">▸</div>
+  </div>
+  <div class="lead-detail" id="card_5">
+    <p class="lead-bio">"Senior Infrastructure Engineer at Grab. DataStax Cassandra powers ride-matching and payments across Southeast Asia. Cross-region latency is critical — 50ms delay means a lost booking."</p>
+    <div class="score-breakdown"><div class="breakdown-item"><div class="breakdown-label">Title</div><div class="breakdown-value">50</div></div><div class="breakdown-item"><div class="breakdown-label">Company Size</div><div class="breakdown-value">80</div></div><div class="breakdown-item"><div class="breakdown-label">DataStax Signal</div><div class="breakdown-value">75</div></div><div class="breakdown-item"><div class="breakdown-label">Recency</div><div class="breakdown-value">50</div></div></div>
+    <div class="pain-section"><h4>Pain Points</h4><ul class="pain-list"><li>Cross-region latency adding 40-80ms to booking flows in Vietnam and Philippines</li><li>DataStax licensing growing with regional expansion</li></ul></div>
+    <div class="messages-section"><h4>Generated Messages</h4><div class="message-card"><div class="message-type-label">Linkedin Dm</div><div class="message-text">Hey Wei,
+
+Been following Grab's infrastructure scaling across SEA—impressive growth, but I imagine those cross-region latency spikes (40-80ms you mentioned) hit hard on booking conversion rates in Vietnam and Philippines.
+
+We've been working with similar high-throughput teams running Cassandra. Quick observation: most are seeing 10x lower p99 latency by switching to a C++ architecture that eliminates JVM GC pauses entirely. One client replaced 10 nodes with 1 on equivalent hardware.
+
+Given DataStax licensing scales with regional expansion, the per-node tax adds up fast. There's a drop-in path here—same CQL, same drivers, zero app rewrites.
+
+Worth a quick 15-min call to see if this applies to your booking flow? Happy to benchmark your current latency profile against what we're seeing.
+
+—</div></div><div class="message-card"><div class="message-type-label">Email</div><div class="message-text">Subject: Cutting latency for Southeast Asia booking flows
+
+Hi Wei,
+
+I've been following Grab's expansion across Vietnam and Philippines, and I imagine those cross-region latency challenges are only getting more acute as you scale ride-matching traffic.
+
+Here's what caught my attention: you're running Cassandra at scale, and those 40-80ms regional delays directly impact booking conversion. We work with infrastructure teams managing similar workloads (Discord, Comcast, others), and they've seen single-digit millisecond p99 latencies by moving from Cassandra to a drop-in replacement that eliminates JVM GC pauses entirely.
+
+The other angle worth considering — as you expand regionally, DataStax licensing per node gets expensive fast. One team we worked with went from 10 nodes down to 1, which completely changed their unit economics.
+
+Since you already run Cassandra, there's no rewrite needed. Same CQL, same drivers, same data model. A few have done this with zero downtime.
+
+Worth a quick 20-min conversation to explore whether this could help with your Southeast Asia latency and licensing costs?
+
+Best,
+[Your name]</div></div></div>
+  </div>
+</div>
+<div class="lead-card">
+  <div class="lead-header" onclick="toggleCard('card_6')">
+    <div class="score-badge" style="background:color-mix(in srgb,#f59e0b 15%,transparent);border:2px solid #f59e0b;color:#f59e0b">
+      62
+    </div>
+    <div class="lead-info">
+      <div class="lead-name">Fatima Al-Hassan</div>
+      <div class="lead-meta">Database Engineer · Walmart Global Tech · Bentonville, AR</div>
+      <div class="lead-tags"><span class="tag tag-tech">DataStax Enterprise</span><span class="tag tag-tech">Cassandra</span><span class="tag tag-tech">Spark</span><span class="tag tag-tech">Azure</span><span class="tag tag-signal">DataStax customer</span></div>
+    </div>
+    <span style="background:rgba(34,197,94,0.15);color:#4ade80;padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">messaged</span>
+    <div class="expand-icon" id="icon_card_6">▸</div>
+  </div>
+  <div class="lead-detail" id="card_6">
+    <p class="lead-bio">"Database Engineer at Walmart Global Tech. DataStax Cassandra backing the real-time inventory platform for 500M+ SKUs. Black Friday every year is my reliability audit."</p>
+    <div class="score-breakdown"><div class="breakdown-item"><div class="breakdown-label">Title</div><div class="breakdown-value">30</div></div><div class="breakdown-item"><div class="breakdown-label">Company Size</div><div class="breakdown-value">90</div></div><div class="breakdown-item"><div class="breakdown-label">DataStax Signal</div><div class="breakdown-value">75</div></div><div class="breakdown-item"><div class="breakdown-label">Recency</div><div class="breakdown-value">70</div></div></div>
+    <div class="pain-section"><h4>Pain Points</h4><ul class="pain-list"><li>Cassandra compaction storms during Black Friday degrading inventory read latency</li><li>DataStax node-based licensing makes peak-capacity planning expensive</li></ul></div>
+    <div class="messages-section"><h4>Generated Messages</h4><div class="message-card"><div class="message-type-label">Linkedin Dm</div><div class="message-text">Hey Fatima,
+
+Been following Walmart's real-time inventory work—managing 500M+ SKUs at that scale is no joke, especially when Black Friday hits.
+
+I'm curious if compaction storms are still a headache during peak seasons. We've been working with teams running similar Cassandra setups, and the pattern is always the same: JVM pauses tank p99 latency right when you need it most.
+
+There's a drop-in Cassandra alternative (same CQL, no rewrites) that eliminates GC pauses entirely and cuts compaction overhead by ~50%. Plus, the licensing model means you're not paying per-node premiums during peak capacity planning.
+
+Worth a quick 15-min call to see if it could help you breathe easier next Black Friday?</div></div><div class="message-card"><div class="message-type-label">Email</div><div class="message-text">Subject: Black Friday inventory latency — new approach
+
+Hi Fatima,
+
+I've been following Walmart's real-time inventory platform work — managing 500M+ SKUs at that scale, especially during peak season, is a genuine operational challenge.
+
+I wanted to reach out because we've been working with teams facing the exact issue you mentioned: Cassandra compaction storms tanking read latency when it matters most. We've found that the root cause isn't usually the data model or query patterns — it's the JVM's garbage collection and how compaction strategies compete for IO during high write volume.
+
+We built ScyllaDB as a drop-in Cassandra replacement (same CQL, same drivers, no rewrites) but with a shard-per-core C++ engine that eliminates GC pauses and reduces compaction overhead by ~50%. One team we worked with went from p99 latencies in the 200ms range down to single-digit milliseconds under their peak load — and cut their node count by 80%.
+
+On the licensing side, since you mentioned DataStax's per-node model, ScyllaDB Enterprise shifts to consumption-based pricing with no per-node tax. That alone changes your peak-capacity economics.
+
+I'd like to show you a 15-minute technical overview of how this works in practice — specifically for inventory platforms. Would next week work?
+
+Best,
+[Your name]</div></div></div>
+  </div>
+</div>
+<div class="lead-card">
+  <div class="lead-header" onclick="toggleCard('card_7')">
+    <div class="score-badge" style="background:color-mix(in srgb,#ef4444 15%,transparent);border:2px solid #ef4444;color:#ef4444">
+      56
+    </div>
+    <div class="lead-info">
+      <div class="lead-name">Chen Wei</div>
+      <div class="lead-meta">Senior Data Engineer · Intuit · Mountain View, CA</div>
+      <div class="lead-tags"><span class="tag tag-tech">Cassandra</span><span class="tag tag-tech">Kafka</span><span class="tag tag-tech">Flink</span><span class="tag tag-tech">Snowflake</span><span class="tag tag-active">recently active</span></div>
+    </div>
+    <span style="background:rgba(148,163,184,0.15);color:#94a3b8;padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">scored</span>
+    <div class="expand-icon" id="icon_card_7">▸</div>
+  </div>
+  <div class="lead-detail" id="card_7">
+    <p class="lead-bio">"Senior Data Engineer at Intuit on the real-time data platform behind TurboTax and QuickBooks. Cassandra at its limits every April. JVM heap tuning is a pre-tax-season ritual."</p>
+    <div class="score-breakdown"><div class="breakdown-item"><div class="breakdown-label">Title</div><div class="breakdown-value">50</div></div><div class="breakdown-item"><div class="breakdown-label">Company Size</div><div class="breakdown-value">90</div></div><div class="breakdown-item"><div class="breakdown-label">DataStax Signal</div><div class="breakdown-value">40</div></div><div class="breakdown-item"><div class="breakdown-label">Recency</div><div class="breakdown-value">85</div></div></div>
+    <div class="pain-section"><h4>Pain Points</h4><ul class="pain-list"><li>JVM heap tuning required every March ahead of tax season filing peak</li><li>Write latency spikes during April filing crunch affecting user experience</li></ul></div>
+    <div class="messages-section"><p class="no-messages">No messages generated (below threshold or not yet processed)</p></div>
+  </div>
+</div>
+<div class="lead-card">
+  <div class="lead-header" onclick="toggleCard('card_8')">
+    <div class="score-badge" style="background:color-mix(in srgb,#ef4444 15%,transparent);border:2px solid #ef4444;color:#ef4444">
+      54
+    </div>
+    <div class="lead-info">
+      <div class="lead-name">Tom Richards</div>
+      <div class="lead-meta">Product Manager · Stripe · San Francisco, CA</div>
+      <div class="lead-tags"><span class="tag tag-tech">Cassandra</span><span class="tag tag-tech">Kafka</span><span class="tag tag-tech">PostgreSQL</span><span class="tag tag-active">recently active</span></div>
+    </div>
+    <span style="background:rgba(148,163,184,0.15);color:#94a3b8;padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">scored</span>
+    <div class="expand-icon" id="icon_card_8">▸</div>
+  </div>
+  <div class="lead-detail" id="card_8">
+    <p class="lead-bio">"Product Manager at Stripe for the Payments Infrastructure team. Work closely with the backend engineers who operate our Cassandra clusters."</p>
+    <div class="score-breakdown"><div class="breakdown-item"><div class="breakdown-label">Title</div><div class="breakdown-value">55</div></div><div class="breakdown-item"><div class="breakdown-label">Company Size</div><div class="breakdown-value">80</div></div><div class="breakdown-item"><div class="breakdown-label">DataStax Signal</div><div class="breakdown-value">40</div></div><div class="breakdown-item"><div class="breakdown-label">Recency</div><div class="breakdown-value">50</div></div></div>
+    
+    <div class="messages-section"><p class="no-messages">No messages generated (below threshold or not yet processed)</p></div>
+  </div>
+</div>
+<div class="lead-card">
+  <div class="lead-header" onclick="toggleCard('card_9')">
+    <div class="score-badge" style="background:color-mix(in srgb,#ef4444 15%,transparent);border:2px solid #ef4444;color:#ef4444">
+      40
+    </div>
+    <div class="lead-info">
+      <div class="lead-name">Aisha Patel</div>
+      <div class="lead-meta">Data Analyst · Netflix · Los Gatos, CA</div>
+      <div class="lead-tags"><span class="tag tag-tech">Cassandra</span><span class="tag tag-tech">Presto</span><span class="tag tag-tech">Tableau</span><span class="tag tag-tech">Spark</span></div>
+    </div>
+    <span style="background:rgba(148,163,184,0.15);color:#94a3b8;padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">scored</span>
+    <div class="expand-icon" id="icon_card_9">▸</div>
+  </div>
+  <div class="lead-detail" id="card_9">
+    <p class="lead-bio">"Data Analyst at Netflix. I query Cassandra daily through Presto for content performance analytics."</p>
+    <div class="score-breakdown"><div class="breakdown-item"><div class="breakdown-label">Title</div><div class="breakdown-value">20</div></div><div class="breakdown-item"><div class="breakdown-label">Company Size</div><div class="breakdown-value">90</div></div><div class="breakdown-item"><div class="breakdown-label">DataStax Signal</div><div class="breakdown-value">30</div></div><div class="breakdown-item"><div class="breakdown-label">Recency</div><div class="breakdown-value">50</div></div></div>
+    
+    <div class="messages-section"><p class="no-messages">No messages generated (below threshold or not yet processed)</p></div>
+  </div>
+</div>
+<div class="lead-card">
+  <div class="lead-header" onclick="toggleCard('card_10')">
+    <div class="score-badge" style="background:color-mix(in srgb,#ef4444 15%,transparent);border:2px solid #ef4444;color:#ef4444">
+      37
+    </div>
+    <div class="lead-info">
+      <div class="lead-name">Emma Wilson</div>
+      <div class="lead-meta">DevOps Engineer · Pivotal Labs · New York, NY</div>
+      <div class="lead-tags"><span class="tag tag-tech">Cassandra</span><span class="tag tag-tech">Kubernetes</span><span class="tag tag-tech">Terraform</span><span class="tag tag-tech">AWS</span></div>
+    </div>
+    <span style="background:rgba(148,163,184,0.15);color:#94a3b8;padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">scored</span>
+    <div class="expand-icon" id="icon_card_10">▸</div>
+  </div>
+  <div class="lead-detail" id="card_10">
+    <p class="lead-bio">"DevOps Engineer helping clients deploy and operate Cassandra on Kubernetes. Generalist ops background, not a DB specialist."</p>
+    <div class="score-breakdown"><div class="breakdown-item"><div class="breakdown-label">Title</div><div class="breakdown-value">30</div></div><div class="breakdown-item"><div class="breakdown-label">Company Size</div><div class="breakdown-value">65</div></div><div class="breakdown-item"><div class="breakdown-label">DataStax Signal</div><div class="breakdown-value">30</div></div><div class="breakdown-item"><div class="breakdown-label">Recency</div><div class="breakdown-value">30</div></div></div>
+    
+    <div class="messages-section"><p class="no-messages">No messages generated (below threshold or not yet processed)</p></div>
+  </div>
+</div>
+<div class="lead-card">
+  <div class="lead-header" onclick="toggleCard('card_11')">
+    <div class="score-badge" style="background:color-mix(in srgb,#ef4444 15%,transparent);border:2px solid #ef4444;color:#ef4444">
+      36
+    </div>
+    <div class="lead-info">
+      <div class="lead-name">Ryan O'Brien</div>
+      <div class="lead-meta">Junior Software Engineer · Discord · San Francisco, CA</div>
+      <div class="lead-tags"><span class="tag tag-tech">Cassandra</span><span class="tag tag-tech">Elixir</span><span class="tag tag-tech">Rust</span></div>
+    </div>
+    <span style="background:rgba(148,163,184,0.15);color:#94a3b8;padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">scored</span>
+    <div class="expand-icon" id="icon_card_11">▸</div>
+  </div>
+  <div class="lead-detail" id="card_11">
+    <p class="lead-bio">"Junior Software Engineer at Discord, 8 months in. Working on the messages backend which runs on Cassandra. Still getting familiar with the stack."</p>
+    <div class="score-breakdown"><div class="breakdown-item"><div class="breakdown-label">Title</div><div class="breakdown-value">30</div></div><div class="breakdown-item"><div class="breakdown-label">Company Size</div><div class="breakdown-value">50</div></div><div class="breakdown-item"><div class="breakdown-label">DataStax Signal</div><div class="breakdown-value">30</div></div><div class="breakdown-item"><div class="breakdown-label">Recency</div><div class="breakdown-value">70</div></div></div>
+    
+    <div class="messages-section"><p class="no-messages">No messages generated (below threshold or not yet processed)</p></div>
+  </div>
+</div>
+<div class="lead-card">
+  <div class="lead-header" onclick="toggleCard('card_12')">
+    <div class="score-badge" style="background:color-mix(in srgb,#94a3b8 15%,transparent);border:2px solid #94a3b8;color:#94a3b8">
+      —
+    </div>
+    <div class="lead-info">
+      <div class="lead-name">Jake Turner</div>
+      <div class="lead-meta">Sales Development Representative · DataStax · Austin, TX</div>
+      <div class="lead-tags"><span class="tag tag-tech">Salesforce</span><span class="tag tag-tech">Outreach</span><span class="tag tag-tech">LinkedIn Sales Navigator</span><span class="tag tag-signal">DataStax customer</span></div>
+    </div>
+    <span style="background:rgba(239,68,68,0.12);color:#f87171;padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">disqualified</span>
+    <div class="expand-icon" id="icon_card_12">▸</div>
+  </div>
+  <div class="lead-detail" id="card_12">
+    <p class="lead-bio">"SDR at DataStax. Prospecting into enterprise accounts."</p>
+    
+    
+    <div class="messages-section"><p class="no-messages">No messages generated (below threshold or not yet processed)</p></div>
+  </div>
+</div>
+<div class="lead-card">
+  <div class="lead-header" onclick="toggleCard('card_13')">
+    <div class="score-badge" style="background:color-mix(in srgb,#94a3b8 15%,transparent);border:2px solid #94a3b8;color:#94a3b8">
+      —
+    </div>
+    <div class="lead-info">
+      <div class="lead-name">Mia Chen</div>
+      <div class="lead-meta">Marketing Specialist · Confluent · Mountain View, CA</div>
+      <div class="lead-tags"><span class="tag tag-tech">HubSpot</span><span class="tag tag-tech">Marketo</span><span class="tag tag-tech">Salesforce</span></div>
+    </div>
+    <span style="background:rgba(239,68,68,0.12);color:#f87171;padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">disqualified</span>
+    <div class="expand-icon" id="icon_card_13">▸</div>
+  </div>
+  <div class="lead-detail" id="card_13">
+    <p class="lead-bio">"Marketing Specialist at Confluent running demand gen campaigns for Kafka Cloud."</p>
+    
+    
+    <div class="messages-section"><p class="no-messages">No messages generated (below threshold or not yet processed)</p></div>
+  </div>
+</div>
+<div class="lead-card">
+  <div class="lead-header" onclick="toggleCard('card_14')">
+    <div class="score-badge" style="background:color-mix(in srgb,#94a3b8 15%,transparent);border:2px solid #94a3b8;color:#94a3b8">
+      —
+    </div>
+    <div class="lead-info">
+      <div class="lead-name">Carlos Rivera</div>
+      <div class="lead-meta">Customer Success Manager · DataStax · San Jose, CA</div>
+      <div class="lead-tags"><span class="tag tag-tech">Salesforce</span><span class="tag tag-tech">Gainsight</span><span class="tag tag-tech">Jira</span><span class="tag tag-signal">DataStax customer</span></div>
+    </div>
+    <span style="background:rgba(239,68,68,0.12);color:#f87171;padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">disqualified</span>
+    <div class="expand-icon" id="icon_card_14">▸</div>
+  </div>
+  <div class="lead-detail" id="card_14">
+    <p class="lead-bio">"Customer Success Manager at DataStax managing 30 enterprise accounts."</p>
+    
+    
+    <div class="messages-section"><p class="no-messages">No messages generated (below threshold or not yet processed)</p></div>
+  </div>
+</div>
+<div class="lead-card">
+  <div class="lead-header" onclick="toggleCard('card_15')">
+    <div class="score-badge" style="background:color-mix(in srgb,#94a3b8 15%,transparent);border:2px solid #94a3b8;color:#94a3b8">
+      —
+    </div>
+    <div class="lead-info">
+      <div class="lead-name">Sophie Liu</div>
+      <div class="lead-meta">Account Executive · MongoDB · New York, NY</div>
+      <div class="lead-tags"><span class="tag tag-tech">Salesforce</span><span class="tag tag-tech">MongoDB Atlas</span><span class="tag tag-tech">Outreach</span></div>
+    </div>
+    <span style="background:rgba(239,68,68,0.12);color:#f87171;padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">disqualified</span>
+    <div class="expand-icon" id="icon_card_15">▸</div>
+  </div>
+  <div class="lead-detail" id="card_15">
+    <p class="lead-bio">"Account Executive at MongoDB selling Atlas into mid-market."</p>
+    
+    
+    <div class="messages-section"><p class="no-messages">No messages generated (below threshold or not yet processed)</p></div>
+  </div>
+</div>
+<div class="lead-card">
+  <div class="lead-header" onclick="toggleCard('card_16')">
+    <div class="score-badge" style="background:color-mix(in srgb,#94a3b8 15%,transparent);border:2px solid #94a3b8;color:#94a3b8">
+      —
+    </div>
+    <div class="lead-info">
+      <div class="lead-name">Ben Foster</div>
+      <div class="lead-meta">Software Engineering Intern · CloudBase Technologies · Boston, MA</div>
+      <div class="lead-tags"><span class="tag tag-tech">Cassandra</span><span class="tag tag-tech">Python</span><span class="tag tag-tech">Docker</span></div>
+    </div>
+    <span style="background:rgba(239,68,68,0.12);color:#f87171;padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">disqualified</span>
+    <div class="expand-icon" id="icon_card_16">▸</div>
+  </div>
+  <div class="lead-detail" id="card_16">
+    <p class="lead-bio">"Summer intern at CloudBase. Working on a Cassandra-backed microservice as my project."</p>
+    
+    
+    <div class="messages-section"><p class="no-messages">No messages generated (below threshold or not yet processed)</p></div>
+  </div>
+</div>
+<div class="lead-card">
+  <div class="lead-header" onclick="toggleCard('card_17')">
+    <div class="score-badge" style="background:color-mix(in srgb,#94a3b8 15%,transparent);border:2px solid #94a3b8;color:#94a3b8">
+      —
+    </div>
+    <div class="lead-info">
+      <div class="lead-name">Rachel Kim</div>
+      <div class="lead-meta">HR Generalist · Confluent · Mountain View, CA</div>
+      <div class="lead-tags"><span class="tag tag-tech">Workday</span><span class="tag tag-tech">Greenhouse</span><span class="tag tag-tech">BambooHR</span></div>
+    </div>
+    <span style="background:rgba(239,68,68,0.12);color:#f87171;padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">disqualified</span>
+    <div class="expand-icon" id="icon_card_17">▸</div>
+  </div>
+  <div class="lead-detail" id="card_17">
+    <p class="lead-bio">"HR Generalist at Confluent supporting engineering teams with hiring and onboarding."</p>
+    
+    
+    <div class="messages-section"><p class="no-messages">No messages generated (below threshold or not yet processed)</p></div>
+  </div>
+</div>
+<div class="lead-card">
+  <div class="lead-header" onclick="toggleCard('card_18')">
+    <div class="score-badge" style="background:color-mix(in srgb,#94a3b8 15%,transparent);border:2px solid #94a3b8;color:#94a3b8">
+      —
+    </div>
+    <div class="lead-info">
+      <div class="lead-name">Daniel Park</div>
+      <div class="lead-meta">Talent Acquisition Specialist · DataStax · Austin, TX</div>
+      <div class="lead-tags"><span class="tag tag-tech">Greenhouse</span><span class="tag tag-tech">LinkedIn Recruiter</span><span class="tag tag-tech">Lever</span><span class="tag tag-signal">DataStax customer</span></div>
+    </div>
+    <span style="background:rgba(239,68,68,0.12);color:#f87171;padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">disqualified</span>
+    <div class="expand-icon" id="icon_card_18">▸</div>
+  </div>
+  <div class="lead-detail" id="card_18">
+    <p class="lead-bio">"Talent Acquisition Specialist at DataStax, focused on engineering roles."</p>
+    
+    
+    <div class="messages-section"><p class="no-messages">No messages generated (below threshold or not yet processed)</p></div>
+  </div>
+</div>
+<div class="lead-card">
+  <div class="lead-header" onclick="toggleCard('card_19')">
+    <div class="score-badge" style="background:color-mix(in srgb,#94a3b8 15%,transparent);border:2px solid #94a3b8;color:#94a3b8">
+      —
+    </div>
+    <div class="lead-info">
+      <div class="lead-name">Natalie Wong</div>
+      <div class="lead-meta">Content Marketing Manager · Amazon Web Services · Seattle, WA</div>
+      <div class="lead-tags"><span class="tag tag-tech">WordPress</span><span class="tag tag-tech">HubSpot</span><span class="tag tag-tech">Adobe Creative Suite</span></div>
+    </div>
+    <span style="background:rgba(239,68,68,0.12);color:#f87171;padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">disqualified</span>
+    <div class="expand-icon" id="icon_card_19">▸</div>
+  </div>
+  <div class="lead-detail" id="card_19">
+    <p class="lead-bio">"Content Marketing Manager at AWS writing about database services."</p>
+    
+    
+    <div class="messages-section"><p class="no-messages">No messages generated (below threshold or not yet processed)</p></div>
+  </div>
+</div>
+  </div>
+
+  <footer>ScyllaDB Hunter · dry_run mode · click any lead to expand messages</footer>
+
+  <script>
+    function toggleCard(id) {
+      const detail = document.getElementById(id);
+      const icon = document.getElementById('icon_' + id);
+      const isOpen = detail.style.display === 'block';
+      detail.style.display = isOpen ? 'none' : 'block';
+      icon.classList.toggle('open', !isOpen);
+    }
+  </script>
+</body>
+</html>

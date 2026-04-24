@@ -1,0 +1,156 @@
+[
+  {
+    "timestamp": "2026-04-24T10:32:21.649772+00:00",
+    "lead_id": "pool_001",
+    "lead_name": "Karan Mehta",
+    "title": "VP of Platform Engineering",
+    "company": "T-Mobile",
+    "message_type": "linkedin_dm",
+    "score": 88.0,
+    "dry_run": true,
+    "message": "Hey Karan,\n\nI've been following T-Mobile's 5G infrastructure challenges\u2014tripling subscriber load while managing DataStax licensing at scale is a familiar pain point for telcos. \n\nWe work with companies in your position who've hit the per-node licensing wall. Most find they can consolidate 10 Cassandra nodes down to 1 without rewrites\u2014your CQL and client libraries stay identical. The math changes fast when licensing stops scaling linearly with nodes.\n\nGiven your Cassandra investment and AWS footprint, this could be worth 15 minutes to explore. No pitch, just a quick benchmark comparison on your actual subscriber data workload.\n\nOpen to a brief call next week?"
+  },
+  {
+    "timestamp": "2026-04-24T10:32:25.605389+00:00",
+    "lead_id": "pool_001",
+    "lead_name": "Karan Mehta",
+    "title": "VP of Platform Engineering",
+    "company": "T-Mobile",
+    "message_type": "email",
+    "score": 88.0,
+    "dry_run": true,
+    "message": "Subject: 5G scale + DataStax licensing \u2014 alternative worth exploring\n\nHi Karan,\n\nI've been following T-Mobile's 5G expansion, and I'm guessing your subscriber data platform is feeling the strain. Tripling node count with per-node licensing is a brutal equation at telco scale.\n\nHere's what caught my attention: we work with infrastructure teams running massive Cassandra deployments who faced the exact same problem. Most are surprised to learn they can replace 10 Cassandra nodes with 1 alternative\u2014without touching a single line of application code.\n\nThe magic is a different architecture. No JVM, no GC pauses, shard-per-core design that hits 1M+ ops/sec per node. More importantly for your situation: consumption-based pricing, not per-node licensing. That model changes the economics dramatically when you're scaling subscriber data at your volume.\n\nSince you're already on Cassandra with mature integrations, there's zero rewrite risk. Drop-in compatible, same CQL, same drivers.\n\nWorth a 20-minute conversation to see if this applies to your 5G growth problem? I can walk through a quick capacity comparison using your current node count.\n\nBest,\n[Your name]"
+  },
+  {
+    "timestamp": "2026-04-24T10:32:28.487994+00:00",
+    "lead_id": "pool_002",
+    "lead_name": "Lin Zhao",
+    "title": "Principal Database Architect",
+    "company": "Comcast",
+    "message_type": "linkedin_dm",
+    "score": 88.8,
+    "dry_run": true,
+    "message": "Hi Lin,\n\nGiven your DataStax renewal timeline and what you've likely seen firsthand on the product side\u2014I thought this might be worth a quick conversation.\n\nWe're working with teams at similar scale (Comcast included) who've cut their Cassandra infrastructure costs by 80\u201390% while actually *reducing* compaction overhead. The shard-per-core architecture eliminates the GC pauses and tuning burden you're probably managing now.\n\nSince you know where DSE falls short, you'd spot immediately whether this actually solves the storage amplification and engineering cycles eating your time.\n\nNo migration needed\u2014drop-in compatible with your existing stack.\n\nWould a quick 15-min call make sense to benchmark against your current setup?\n\nLin"
+  },
+  {
+    "timestamp": "2026-04-24T10:32:32.748422+00:00",
+    "lead_id": "pool_002",
+    "lead_name": "Lin Zhao",
+    "title": "Principal Database Architect",
+    "company": "Comcast",
+    "message_type": "email",
+    "score": 88.8,
+    "dry_run": true,
+    "message": "Subject: Cassandra costs & compaction \u2014 what we're seeing in 2026 renewals\n\nHi Lin,\n\nI reached out because your situation is one we're seeing repeatedly: DataStax renewals hitting hard, and compaction management eating up engineering cycles that should go elsewhere.\n\nGiven your background as a DataStax SE, you know exactly where the operational overhead lives. The JVM tuning, the compaction storms under write load, the per-node licensing stacking on top of infrastructure costs \u2014 that's the tax most teams don't realize they're paying until renewal time.\n\nWe've worked with companies like Comcast running Cassandra at scale, and the pattern is consistent: a drop-in Cassandra replacement can cut node count by 80\u201390% while cutting compaction overhead in half. Same CQL, same drivers, no rewrite. But what matters for your 2026 decision is that the economics flip entirely \u2014 consumption-based licensing instead of per-node tax, and significantly lower storage amplification.\n\nI'm not going to oversell this. With your DataStax background, you'll spot the gaps fast. But if exploring a real alternative before renewal makes sense, I'd rather have a 15-minute conversation now than watch this drag into Q1.\n\nAre you open to a brief technical call sometime in the next week?\n\nLin"
+  },
+  {
+    "timestamp": "2026-04-24T10:32:35.481358+00:00",
+    "lead_id": "pool_003",
+    "lead_name": "Priya Nair",
+    "title": "Head of Infrastructure",
+    "company": "Nubank",
+    "message_type": "linkedin_dm",
+    "score": 85.0,
+    "dry_run": true,
+    "message": "Hi Priya,\n\nSaw Nubank's expansion into Mexico and Colombia\u2014impressive scale. Given your board-level focus on infrastructure costs and the tightening latency SLAs across regions, thought this might be worth a quick conversation.\n\nWe've helped teams running Cassandra at scale cut infrastructure spend by 80\u201390% while hitting single-digit ms p99 latencies. The math is pretty compelling: replace 10 nodes with 1, plus no per-node licensing tax like you're experiencing with DataStax.\n\nSince you're already on Cassandra, there's no rewrite\u2014it's a drop-in replacement. Several fintechs have migrated with zero downtime.\n\nWould be worth 15 minutes to walk through what this could look like for your ledger infrastructure?"
+  },
+  {
+    "timestamp": "2026-04-24T10:32:39.440194+00:00",
+    "lead_id": "pool_003",
+    "lead_name": "Priya Nair",
+    "title": "Head of Infrastructure",
+    "company": "Nubank",
+    "message_type": "email",
+    "score": 85.0,
+    "dry_run": true,
+    "message": "Subject: Cassandra economics at scale \u2014 what we're seeing at Latin American fintechs\n\nHi Priya,\n\nI've been following Nubank's expansion into Mexico and Colombia \u2014 impressive growth trajectory for 90M+ customers. I imagine that's putting real pressure on your infrastructure costs, especially as DataStax licensing scales with nodes rather than actual usage.\n\nWe work with several large Latin American fintechs running similar Cassandra workloads, and there's a pattern: they're replacing 10 Cassandra nodes with 1 drop-in alternative that cuts infrastructure spend by 80\u201390%, while cutting p99 latency to single-digit milliseconds (vs. your current 50\u2013200ms). The kicker is the licensing model \u2014 consumption-based, not per-node, so your costs actually align with customer growth instead of outpacing it.\n\nBecause it's 100% Cassandra-compatible, there's no app rewrite. A few have migrated with zero downtime.\n\nGiven that infrastructure cost is a board-level KPI and latency SLAs are tightening, this might be worth 15 minutes. I can walk you through what we're seeing with similar-scale deployments and your specific GCP setup.\n\nFree?\n\nBest,\n[Your name]"
+  },
+  {
+    "timestamp": "2026-04-24T10:32:42.542814+00:00",
+    "lead_id": "pool_004",
+    "lead_name": "Omar Al-Farsi",
+    "title": "Staff Platform Engineer",
+    "company": "Netflix",
+    "message_type": "linkedin_dm",
+    "score": 78.0,
+    "dry_run": true,
+    "message": "Hey Omar,\n\nSaw your internal piece on C++ storage alternatives\u2014really resonated with me. Managing Netflix's scale on Cassandra is impressive, but I get why compaction and GC pauses are eating up your team's cycles.\n\nWe've been working with teams at similar scale (Grab, Discord) who ditched the JVM entirely. Our shard-per-core architecture kills GC pauses and cuts compaction overhead by ~50%. The kicker: drop-in compatible with your existing setup\u2014same CQL, same drivers, zero application rewrites.\n\nGiven your data volumes tripled post-pandemic, the operational lift of Cassandra management probably only got worse. Would be worth a quick conversation on how we're helping storage teams reclaim engineering bandwidth.\n\nFree to grab 15 min this week?"
+  },
+  {
+    "timestamp": "2026-04-24T10:32:46.848887+00:00",
+    "lead_id": "pool_004",
+    "lead_name": "Omar Al-Farsi",
+    "title": "Staff Platform Engineer",
+    "company": "Netflix",
+    "message_type": "email",
+    "score": 78.0,
+    "dry_run": true,
+    "message": "Subject: Cassandra compaction at Netflix scale \u2014 worth a conversation?\n\nHi Omar,\n\nI've been following Netflix's published work on storage platform challenges, and your team's internal research on C++ alternatives caught my attention. Given the scale you're operating at, I thought it worth reaching out directly.\n\nWe work with teams managing some of the world's largest Cassandra deployments (similar scale to yours), and they consistently point to two pain points that resonate:\n\n**1) Compaction overhead** \u2014 It's consuming disproportionate engineering cycles. Our customers typically see 50% reduction in compaction storms by moving to a reactive, shard-per-core architecture that's fundamentally different from JVM-based strategies.\n\n**2) GC pauses** \u2014 You've clearly identified this as a blocker. A C++ storage engine eliminates JVM pause variability entirely, which matters at your request volume.\n\nThe practical piece: it's a drop-in Cassandra replacement. Same CQL, same drivers, same data model. Teams like Comcast and Grab did zero-downtime migrations without application rewrites.\n\nI'm not going to oversell this \u2014 whether it's a fit depends entirely on your current priorities and timeline. But if compaction overhead and GC latency are near the top of your list right now, a 20-minute conversation might be useful.\n\nOpen to a quick call next week?\n\nBest,\n[Your name]"
+  },
+  {
+    "timestamp": "2026-04-24T10:32:50.017952+00:00",
+    "lead_id": "pool_005",
+    "lead_name": "Jake Morrison",
+    "title": "Senior Backend Engineer",
+    "company": "eBay",
+    "message_type": "linkedin_dm",
+    "score": 69.0,
+    "dry_run": true,
+    "message": "Hey Jake,\n\nBeen following eBay's scale challenges\u2014managing 2B+ listings with Q4 peak load is no joke. Curious if you're still battling JVM GC pauses during those spikes. We work with teams running similar catalog-scale workloads, and most find the GC issue pretty frustrating when latency matters.\n\nQuick context: we've seen teams cut Cassandra node counts by 80-90% while dropping p99 latency into single digits\u2014no JVM tuning required. Plus, if DataStax licensing is scaling with your listing volume, there's usually meaningful savings there too.\n\nWould be worth a quick 15-min chat to see if it applies to your stack. No pitch\u2014just comparing notes on what's working at scale.\n\nFree this week?"
+  },
+  {
+    "timestamp": "2026-04-24T10:32:54.530406+00:00",
+    "lead_id": "pool_005",
+    "lead_name": "Jake Morrison",
+    "title": "Senior Backend Engineer",
+    "company": "eBay",
+    "message_type": "email",
+    "score": 69.0,
+    "dry_run": true,
+    "message": "Subject: Eliminating Q4 GC pauses for your listings platform\n\nHi Jake,\n\nI've been following eBay's scale challenges with Cassandra\u2014managing 2B+ listings across peak season is no small feat, especially when JVM GC pauses start tanking your listing API latency in Q4.\n\nWe work with backend teams handling similar catalog-scale problems. The core issue is the JVM itself: garbage collection becomes a bottleneck the moment your traffic spikes. Most teams end up throwing more nodes at the problem, which compounds licensing costs.\n\nThere's a simpler path. A few companies like Discord and Comcast replaced their Cassandra clusters with a C++ alternative that:\n\n1. **Eliminates GC pauses entirely** \u2014 shard-per-core architecture means no stop-the-world collections during peak load\n2. **Cuts infrastructure ~80\u201390%** \u2014 one node handles what takes 10 Cassandra nodes; plus, consumption-based licensing (no per-node tax like DataStax)\n\nIt's a drop-in replacement for Cassandra. Same CQL, same drivers, zero application rewrites. Zero-downtime migration is standard.\n\nGiven your Q4 timeline and cost pressures, might be worth a quick 20-min conversation to explore whether this fits your architecture.\n\nOpen to a brief call next week?\n\nCheers,\n[Your name]"
+  },
+  {
+    "timestamp": "2026-04-24T10:32:57.389152+00:00",
+    "lead_id": "pool_006",
+    "lead_name": "Fatima Al-Hassan",
+    "title": "Database Engineer",
+    "company": "Walmart Global Tech",
+    "message_type": "linkedin_dm",
+    "score": 62.0,
+    "dry_run": true,
+    "message": "Hey Fatima,\n\nBeen following Walmart's real-time inventory work\u2014managing 500M+ SKUs at that scale is no joke, especially when Black Friday hits.\n\nI'm curious if compaction storms are still a headache during peak seasons. We've been working with teams running similar Cassandra setups, and the pattern is always the same: JVM pauses tank p99 latency right when you need it most.\n\nThere's a drop-in Cassandra alternative (same CQL, no rewrites) that eliminates GC pauses entirely and cuts compaction overhead by ~50%. Plus, the licensing model means you're not paying per-node premiums during peak capacity planning.\n\nWorth a quick 15-min call to see if it could help you breathe easier next Black Friday?"
+  },
+  {
+    "timestamp": "2026-04-24T10:33:01.895376+00:00",
+    "lead_id": "pool_006",
+    "lead_name": "Fatima Al-Hassan",
+    "title": "Database Engineer",
+    "company": "Walmart Global Tech",
+    "message_type": "email",
+    "score": 62.0,
+    "dry_run": true,
+    "message": "Subject: Black Friday inventory latency \u2014 new approach\n\nHi Fatima,\n\nI've been following Walmart's real-time inventory platform work \u2014 managing 500M+ SKUs at that scale, especially during peak season, is a genuine operational challenge.\n\nI wanted to reach out because we've been working with teams facing the exact issue you mentioned: Cassandra compaction storms tanking read latency when it matters most. We've found that the root cause isn't usually the data model or query patterns \u2014 it's the JVM's garbage collection and how compaction strategies compete for IO during high write volume.\n\nWe built ScyllaDB as a drop-in Cassandra replacement (same CQL, same drivers, no rewrites) but with a shard-per-core C++ engine that eliminates GC pauses and reduces compaction overhead by ~50%. One team we worked with went from p99 latencies in the 200ms range down to single-digit milliseconds under their peak load \u2014 and cut their node count by 80%.\n\nOn the licensing side, since you mentioned DataStax's per-node model, ScyllaDB Enterprise shifts to consumption-based pricing with no per-node tax. That alone changes your peak-capacity economics.\n\nI'd like to show you a 15-minute technical overview of how this works in practice \u2014 specifically for inventory platforms. Would next week work?\n\nBest,\n[Your name]"
+  },
+  {
+    "timestamp": "2026-04-24T10:33:04.865312+00:00",
+    "lead_id": "pool_008",
+    "lead_name": "Wei Zhang",
+    "title": "Senior Infrastructure Engineer",
+    "company": "Grab",
+    "message_type": "linkedin_dm",
+    "score": 66.0,
+    "dry_run": true,
+    "message": "Hey Wei,\n\nBeen following Grab's infrastructure scaling across SEA\u2014impressive growth, but I imagine those cross-region latency spikes (40-80ms you mentioned) hit hard on booking conversion rates in Vietnam and Philippines.\n\nWe've been working with similar high-throughput teams running Cassandra. Quick observation: most are seeing 10x lower p99 latency by switching to a C++ architecture that eliminates JVM GC pauses entirely. One client replaced 10 nodes with 1 on equivalent hardware.\n\nGiven DataStax licensing scales with regional expansion, the per-node tax adds up fast. There's a drop-in path here\u2014same CQL, same drivers, zero app rewrites.\n\nWorth a quick 15-min call to see if this applies to your booking flow? Happy to benchmark your current latency profile against what we're seeing.\n\n\u2014"
+  },
+  {
+    "timestamp": "2026-04-24T10:33:08.856808+00:00",
+    "lead_id": "pool_008",
+    "lead_name": "Wei Zhang",
+    "title": "Senior Infrastructure Engineer",
+    "company": "Grab",
+    "message_type": "email",
+    "score": 66.0,
+    "dry_run": true,
+    "message": "Subject: Cutting latency for Southeast Asia booking flows\n\nHi Wei,\n\nI've been following Grab's expansion across Vietnam and Philippines, and I imagine those cross-region latency challenges are only getting more acute as you scale ride-matching traffic.\n\nHere's what caught my attention: you're running Cassandra at scale, and those 40-80ms regional delays directly impact booking conversion. We work with infrastructure teams managing similar workloads (Discord, Comcast, others), and they've seen single-digit millisecond p99 latencies by moving from Cassandra to a drop-in replacement that eliminates JVM GC pauses entirely.\n\nThe other angle worth considering \u2014 as you expand regionally, DataStax licensing per node gets expensive fast. One team we worked with went from 10 nodes down to 1, which completely changed their unit economics.\n\nSince you already run Cassandra, there's no rewrite needed. Same CQL, same drivers, same data model. A few have done this with zero downtime.\n\nWorth a quick 20-min conversation to explore whether this could help with your Southeast Asia latency and licensing costs?\n\nBest,\n[Your name]"
+  }
+]

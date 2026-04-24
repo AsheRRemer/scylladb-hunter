@@ -1,0 +1,12 @@
+# sqlite binary — not human-readable
+output/leads.db
+
+# python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# env / secrets
+.env
