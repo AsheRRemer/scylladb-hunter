@@ -45,7 +45,7 @@
     .container { max-width: 1060px; margin: 0 auto; padding: 2rem 1.5rem; }
     .funnel {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 1rem;
       margin-bottom: 2.5rem;
     }
@@ -248,7 +248,7 @@
   <header>
     <div class="logo">S</div>
     <h1>ScyllaDB GTM Pipeline</h1>
-    <span class="generated">Generated 2026-04-25 19:10 UTC</span>
+    <span class="generated">Generated 2026-04-25 19:20 UTC</span>
   </header>
 
   <div class="container">
@@ -273,14 +273,7 @@
         <div class="funnel-label">Messaged</div>
         <div class="funnel-sub">outreach sent</div>
       </div>
-      <div class="funnel-stage">
-        <div class="funnel-count">0</div>
-        <div class="funnel-label">Responded</div>
-        <div class="funnel-sub">replied to outreach</div>
-      </div>
     </div>
-
-    
 
     <div class="section-title">All Leads — click to expand</div>
     
@@ -306,21 +299,19 @@
     <div style="margin-bottom:1.25rem"><span style="background:rgba(34,197,94,0.12);color:#22c55e;padding:3px 9px;border-radius:12px;font-size:0.67rem;font-weight:700;letter-spacing:0.04em;margin-right:6px;">Email: high</span><span style="background:rgba(34,197,94,0.12);color:#22c55e;padding:3px 9px;border-radius:12px;font-size:0.67rem;font-weight:700;letter-spacing:0.04em;margin-right:6px;">Bio: high</span><span style="background:rgba(34,197,94,0.12);color:#22c55e;padding:3px 9px;border-radius:12px;font-size:0.67rem;font-weight:700;letter-spacing:0.04em;margin-right:6px;">Tenure: known</span></div>
     <div style="margin-bottom:0.5rem;font-size:0.67rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted)">ICP Fit</div><div class="score-breakdown" style="margin-bottom:1rem"><div class="breakdown-item"><div class="breakdown-label">Title</div><div class="breakdown-value">70</div></div><div class="breakdown-item"><div class="breakdown-label">Company Size</div><div class="breakdown-value">100</div></div><div class="breakdown-item"><div class="breakdown-label">DataStax Signal</div><div class="breakdown-value">90</div></div><div class="breakdown-item"><div class="breakdown-label">Recency</div><div class="breakdown-value">50</div></div></div><div style="margin-bottom:0.5rem;font-size:0.67rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted)">Data Confidence</div><div class="score-breakdown" style="margin-bottom:1.25rem"><div class="breakdown-item"><div class="breakdown-label">Email</div><div class="breakdown-value">100</div></div><div class="breakdown-item"><div class="breakdown-label">Bio</div><div class="breakdown-value">100</div></div><div class="breakdown-item"><div class="breakdown-label">Tenure</div><div class="breakdown-value">100</div></div></div>
     
-    <div class="messages-section"><h4>Generated Messages</h4><div class="message-card"><div class="message-type-label">Step 1 · Day 0 · Linkedin Connection</div><div class="message-text">Hi Lin, I'm reaching out because Comcast's scale with Cassandra aligns with what we're seeing at other large operators. Given your background at DataStax, I'd value your perspective on how next-gen architectures handle latency and ops overhead. Worth a conversation?</div></div><div class="message-card"><div class="message-type-label">Step 2 · Day 3 · Email</div><div class="message-text">Subject: Cassandra latency and ops complexity at scale
+    <div class="messages-section"><h4>Generated Messages</h4><div class="message-card"><div class="message-type-label">Step 1 · Day 0 · Linkedin Connection</div><div class="message-text">Hi Lin, I noticed you're evaluating next-gen Cassandra alternatives at Comcast. Given your focus on latency and ops overhead, I'd love to share how others have tackled this. Worth a quick conversation?</div></div><div class="message-card"><div class="message-type-label">Step 2 · Day 3 · Email</div><div class="message-text">Subject: Reducing latency and ops overhead at scale
 
 Hi Lin,
 
-I came across your profile and noticed Comcast is evaluating next-gen Cassandra alternatives. Given your background at DataStax and current focus on latency and operational overhead, I thought this might be relevant.
+Given your background at DataStax and current focus on Cassandra alternatives, I thought this might be worth a few minutes of your time.
 
-We're seeing Principal Architects like yourself tackle two persistent Cassandra pain points: p99 latencies hitting 50-200ms under load, and the compaction/GC tuning overhead that compounds as clusters scale. At Comcast's scale, that ops burden likely adds up fast.
+We're seeing Principal Architects at large-scale operations like Comcast deal with a familiar tradeoff: Cassandra's operational simplicity comes at the cost of latency and infrastructure spend. The JVM GC pauses and compaction overhead hit especially hard when you're running millions of ops/sec across hundreds of nodes.
 
-ScyllaDB addresses both directly. Our shard-per-core C++ architecture eliminates JVM GC pauses entirely, delivering single-digit ms p99 latencies. On the ops side, it auto-tunes compaction and doesn't require the heap management you're familiar with from Cassandra.
+What if you could cut your cluster size by 80-90% while dropping p99 latency from 50-200ms into single digits? That's what we're seeing with customers migrating from Cassandra. The shard-per-core architecture eliminates GC entirely, and compaction runs without the storms that tie up your ops team.
 
-The practical win: drop-in CQL compatibility means no application rewrites, but you can often consolidate 10 Cassandra nodes into 1 ScyllaDB node without touching your client code.
+Best part: it's a drop-in replacement. Same CQL, same drivers, same data model. No rewrites. Several teams have gone live with zero downtime.
 
-We've helped similar organizations complete migrations with zero downtime. I'd like to show you a quick benchmark comparison against your current infrastructure and discuss what a small POC might look like.
-
-Would you have 20 minutes next week to explore this?
+I know you're evaluating options right now. Would it make sense to spend 20 minutes next week looking at a real-world comparison from someone who's lived in the Cassandra ecosystem?
 
 Best,
 [Your name]</div></div></div>
@@ -349,7 +340,7 @@ Best,
     <div style="margin-bottom:1.25rem"><span style="background:rgba(34,197,94,0.12);color:#22c55e;padding:3px 9px;border-radius:12px;font-size:0.67rem;font-weight:700;letter-spacing:0.04em;margin-right:6px;">Email: high</span><span style="background:rgba(34,197,94,0.12);color:#22c55e;padding:3px 9px;border-radius:12px;font-size:0.67rem;font-weight:700;letter-spacing:0.04em;margin-right:6px;">Bio: high</span><span style="background:rgba(34,197,94,0.12);color:#22c55e;padding:3px 9px;border-radius:12px;font-size:0.67rem;font-weight:700;letter-spacing:0.04em;margin-right:6px;">Tenure: known</span></div>
     <div style="margin-bottom:0.5rem;font-size:0.67rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted)">ICP Fit</div><div class="score-breakdown" style="margin-bottom:1rem"><div class="breakdown-item"><div class="breakdown-label">Title</div><div class="breakdown-value">85</div></div><div class="breakdown-item"><div class="breakdown-label">Company Size</div><div class="breakdown-value">100</div></div><div class="breakdown-item"><div class="breakdown-label">DataStax Signal</div><div class="breakdown-value">75</div></div><div class="breakdown-item"><div class="breakdown-label">Recency</div><div class="breakdown-value">50</div></div></div><div style="margin-bottom:0.5rem;font-size:0.67rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted)">Data Confidence</div><div class="score-breakdown" style="margin-bottom:1.25rem"><div class="breakdown-item"><div class="breakdown-label">Email</div><div class="breakdown-value">100</div></div><div class="breakdown-item"><div class="breakdown-label">Bio</div><div class="breakdown-value">100</div></div><div class="breakdown-item"><div class="breakdown-label">Tenure</div><div class="breakdown-value">100</div></div></div>
     
-    <div class="messages-section"><h4>Generated Messages</h4><div class="message-card"><div class="message-type-label">Step 1 · Day 0 · Linkedin Connection</div><div class="message-text">Hi Karan - saw you're leading platform engineering at T-Mobile with 120M+ subscribers on Cassandra. Given your scale and latency/cost pressures, I think there's a conversation worth having. Open to connecting?</div></div></div>
+    <div class="messages-section"><h4>Generated Messages</h4><div class="message-card"><div class="message-type-label">Step 1 · Day 0 · Linkedin Connection</div><div class="message-text">Hi Karan, I work with VP Platform Engineering teams at scale managing 100M+ subscriber bases. Your Cassandra infrastructure at T-Mobile likely faces latency and ops overhead challenges we're solving. Worth a brief conversation?</div></div></div>
     
   </div>
 </div>
@@ -375,35 +366,30 @@ Best,
     <div style="margin-bottom:1.25rem"><span style="background:rgba(34,197,94,0.12);color:#22c55e;padding:3px 9px;border-radius:12px;font-size:0.67rem;font-weight:700;letter-spacing:0.04em;margin-right:6px;">Email: high</span><span style="background:rgba(34,197,94,0.12);color:#22c55e;padding:3px 9px;border-radius:12px;font-size:0.67rem;font-weight:700;letter-spacing:0.04em;margin-right:6px;">Bio: high</span><span style="background:rgba(34,197,94,0.12);color:#22c55e;padding:3px 9px;border-radius:12px;font-size:0.67rem;font-weight:700;letter-spacing:0.04em;margin-right:6px;">Tenure: known</span></div>
     <div style="margin-bottom:0.5rem;font-size:0.67rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted)">ICP Fit</div><div class="score-breakdown" style="margin-bottom:1rem"><div class="breakdown-item"><div class="breakdown-label">Title</div><div class="breakdown-value">80</div></div><div class="breakdown-item"><div class="breakdown-label">Company Size</div><div class="breakdown-value">90</div></div><div class="breakdown-item"><div class="breakdown-label">DataStax Signal</div><div class="breakdown-value">75</div></div><div class="breakdown-item"><div class="breakdown-label">Recency</div><div class="breakdown-value">50</div></div></div><div style="margin-bottom:0.5rem;font-size:0.67rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted)">Data Confidence</div><div class="score-breakdown" style="margin-bottom:1.25rem"><div class="breakdown-item"><div class="breakdown-label">Email</div><div class="breakdown-value">100</div></div><div class="breakdown-item"><div class="breakdown-label">Bio</div><div class="breakdown-value">100</div></div><div class="breakdown-item"><div class="breakdown-label">Tenure</div><div class="breakdown-value">100</div></div></div>
     
-    <div class="messages-section"><h4>Generated Messages</h4><div class="message-card"><div class="message-type-label">Step 1 · Day 0 · Linkedin Connection</div><div class="message-text">Hi Priya, I work with infrastructure teams scaling Cassandra at massive scale. Given Nubank's 90M+ customers and focus on latency/cost, I'd love to share what we're seeing with similar teams. Open to a quick chat?</div></div><div class="message-card"><div class="message-type-label">Step 2 · Day 3 · Email</div><div class="message-text">Subject: Cutting latency and ops overhead at scale
+    <div class="messages-section"><h4>Generated Messages</h4><div class="message-card"><div class="message-type-label">Step 1 · Day 0 · Linkedin Connection</div><div class="message-text">Hi Priya, I work with infrastructure leaders scaling Cassandra at massive scale. Given Nubank's 90M+ customer base and latency/cost pressures, I'd love to explore how peers are optimizing their data layer. Worth a quick chat?</div></div><div class="message-card"><div class="message-type-label">Step 2 · Day 3 · Email</div><div class="message-text">Subject: Reducing latency and ops overhead at scale
 
 Hi Priya,
 
-I've been following Nubank's impressive growth across Latin America, and I imagine scaling Cassandra for 90M+ customers comes with real challenges around latency and operational complexity.
+I've been following Nubank's infrastructure evolution across Latin America, and I imagine managing distributed data systems for 90M+ customers means latency and operational complexity are constant challenges.
 
-We work with infrastructure leaders managing similar scale, and there's a pattern we see: Cassandra deployments often need 10+ nodes to hit sub-50ms p99 latency targets. We've helped teams replace that with 1-2 nodes using ScyllaDB, our drop-in Cassandra replacement built in C++ instead of Java.
+We work with infrastructure teams running massive Cassandra deployments (Grab, Discord, Comcast among them), and they consistently hit two pain points: p99 latency creeping into the 50-200ms range under peak load, and the operational overhead of managing JVM tuning and compaction storms.
 
-The main wins for ops-heavy environments like yours:
+ScyllaDB is built as a drop-in Cassandra replacement - same CQL, same drivers, zero app rewrites. But the architecture difference is significant: we deliver single-digit millisecond p99 latency and 10x the throughput per node by eliminating JVM GC pauses entirely. For teams like yours, that typically means replacing 10 Cassandra nodes with 1 ScyllaDB node, plus dramatically less time spent on compaction and heap tuning.
 
-1. Single-digit ms p99 latency (no JVM GC pauses eating into your SLAs)
-2. 80-90% fewer nodes needed - meaning less infrastructure to tune, patch, and manage
+Most importantly, it's a non-disruptive migration. Your existing Cassandra clients work as-is.
 
-Since you're already on Cassandra and DataStax, migration is straightforward: same CQL, same drivers, same data model. Several teams have done it with zero downtime.
-
-I'd love to show you a quick comparison specific to Nubank's workload - just 20 minutes to see where you could simplify ops and trim costs.
-
-Are you open to a brief call next week?
+Would it make sense to spend 20 minutes next week exploring whether this could apply to your highest-latency use cases? Happy to walk through a specific migration scenario.
 
 Best,
-[Your name]</div></div><div class="message-card"><div class="message-type-label">Step 3 · Day 7 · Email Followup</div><div class="message-text">Subject: Reducing Cassandra operational overhead at scale
+[Your name]</div></div><div class="message-card"><div class="message-type-label">Step 3 · Day 7 · Email Followup</div><div class="message-text">Subject: Latency at scale for 90M+ customers
 
 Hi Priya,
 
-Following up on our earlier conversation. Given Nubank's scale (90M+ customers), I wanted to share something relevant: most infrastructure teams operating Cassandra clusters your size spend 30-40% of ops cycles on JVM tuning and compaction management.
+Following up on our earlier note. I was reading about Nubank's infrastructure challenges at scale - managing latency for 90M+ customers across distributed regions is no small feat.
 
-We've helped similar companies eliminate that overhead entirely while cutting node count by 80%. No application changes required.
+Many infrastructure leaders scaling Cassandra hit a wall around p99 latency and operational overhead. We've seen teams cut their node count by 80% while dropping latency from 50-200ms to single digits - no app rewrites needed.
 
-Worth a quick conversation?
+Worth a brief conversation?
 
 Best,
 [Your name]</div></div></div>
@@ -432,7 +418,7 @@ Best,
     <div style="margin-bottom:1.25rem"><span style="background:rgba(251,191,36,0.12);color:#f59e0b;padding:3px 9px;border-radius:12px;font-size:0.67rem;font-weight:700;letter-spacing:0.04em;margin-right:6px;">Email: medium</span><span style="background:rgba(168,85,247,0.12);color:#c084fc;padding:3px 9px;border-radius:12px;font-size:0.67rem;font-weight:700;letter-spacing:0.04em;margin-right:6px;">Bio: inferred</span><span style="background:rgba(239,68,68,0.12);color:#f87171;padding:3px 9px;border-radius:12px;font-size:0.67rem;font-weight:700;letter-spacing:0.04em;margin-right:6px;">Tenure: unknown</span></div>
     <div style="margin-bottom:0.5rem;font-size:0.67rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted)">ICP Fit</div><div class="score-breakdown" style="margin-bottom:1rem"><div class="breakdown-item"><div class="breakdown-label">Title</div><div class="breakdown-value">60</div></div><div class="breakdown-item"><div class="breakdown-label">Company Size</div><div class="breakdown-value">90</div></div><div class="breakdown-item"><div class="breakdown-label">DataStax Signal</div><div class="breakdown-value">75</div></div><div class="breakdown-item"><div class="breakdown-label">Recency</div><div class="breakdown-value">50</div></div></div><div style="margin-bottom:0.5rem;font-size:0.67rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted)">Data Confidence</div><div class="score-breakdown" style="margin-bottom:1.25rem"><div class="breakdown-item"><div class="breakdown-label">Email</div><div class="breakdown-value">60</div></div><div class="breakdown-item"><div class="breakdown-label">Bio</div><div class="breakdown-value">50</div></div><div class="breakdown-item"><div class="breakdown-label">Tenure</div><div class="breakdown-value">0</div></div></div>
     <div class="pain-section"><h4>Pain Points</h4><ul class="pain-list"><li>Cassandra compaction storms degrading write throughput</li><li>heap tuning and GC configuration complexity</li></ul></div>
-    <div class="messages-section"><h4>Generated Messages</h4><div class="message-card"><div class="message-type-label">Step 1 · Day 0 · Linkedin Connection</div><div class="message-text">Hi Omar, I'm reaching out because I noticed Netflix runs Cassandra at scale. We've helped similar teams eliminate compaction storms and heap tuning overhead. Worth a quick conversation?</div></div></div>
+    <div class="messages-section"><h4>Generated Messages</h4><div class="message-card"><div class="message-type-label">Step 1 · Day 0 · Linkedin Connection</div><div class="message-text">Hi Omar, I work with platform teams at scale managing Cassandra infrastructure. Your work at Netflix caught my attention - especially given the compaction and GC tuning challenges at your scale. Would love to connect and chat about what's working (and what isn't) in your current setup.</div></div></div>
     
   </div>
 </div>
@@ -458,7 +444,7 @@ Best,
     <div style="margin-bottom:1.25rem"><span style="background:rgba(34,197,94,0.12);color:#22c55e;padding:3px 9px;border-radius:12px;font-size:0.67rem;font-weight:700;letter-spacing:0.04em;margin-right:6px;">Email: high</span><span style="background:rgba(34,197,94,0.12);color:#22c55e;padding:3px 9px;border-radius:12px;font-size:0.67rem;font-weight:700;letter-spacing:0.04em;margin-right:6px;">Bio: high</span><span style="background:rgba(239,68,68,0.12);color:#f87171;padding:3px 9px;border-radius:12px;font-size:0.67rem;font-weight:700;letter-spacing:0.04em;margin-right:6px;">Tenure: unknown</span></div>
     <div style="margin-bottom:0.5rem;font-size:0.67rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted)">ICP Fit</div><div class="score-breakdown" style="margin-bottom:1rem"><div class="breakdown-item"><div class="breakdown-label">Title</div><div class="breakdown-value">50</div></div><div class="breakdown-item"><div class="breakdown-label">Company Size</div><div class="breakdown-value">90</div></div><div class="breakdown-item"><div class="breakdown-label">DataStax Signal</div><div class="breakdown-value">75</div></div><div class="breakdown-item"><div class="breakdown-label">Recency</div><div class="breakdown-value">50</div></div></div><div style="margin-bottom:0.5rem;font-size:0.67rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted)">Data Confidence</div><div class="score-breakdown" style="margin-bottom:1.25rem"><div class="breakdown-item"><div class="breakdown-label">Email</div><div class="breakdown-value">100</div></div><div class="breakdown-item"><div class="breakdown-label">Bio</div><div class="breakdown-value">100</div></div><div class="breakdown-item"><div class="breakdown-label">Tenure</div><div class="breakdown-value">0</div></div></div>
     
-    <div class="messages-section"><h4>Generated Messages</h4><div class="message-card"><div class="message-type-label">Step 1 · Day 0 · Linkedin Connection</div><div class="message-text">Hi Jake, I work with backend engineers at scale-heavy companies like eBay managing Cassandra infrastructure. Saw your work on the listings platform and wanted to connect around latency and ops overhead challenges. Worth a quick conversation?</div></div></div>
+    <div class="messages-section"><h4>Generated Messages</h4><div class="message-card"><div class="message-type-label">Step 1 · Day 0 · Linkedin Connection</div><div class="message-text">Hi Jake, I work with backend teams running Cassandra at scale. Saw you're working on eBay's listings platform at 2B+ scale - curious if latency and ops overhead are still top concerns for your infra. Would be great to connect.</div></div></div>
     
   </div>
 </div>
@@ -484,32 +470,33 @@ Best,
     <div style="margin-bottom:1.25rem"><span style="background:rgba(34,197,94,0.12);color:#22c55e;padding:3px 9px;border-radius:12px;font-size:0.67rem;font-weight:700;letter-spacing:0.04em;margin-right:6px;">Email: high</span><span style="background:rgba(34,197,94,0.12);color:#22c55e;padding:3px 9px;border-radius:12px;font-size:0.67rem;font-weight:700;letter-spacing:0.04em;margin-right:6px;">Bio: high</span><span style="background:rgba(34,197,94,0.12);color:#22c55e;padding:3px 9px;border-radius:12px;font-size:0.67rem;font-weight:700;letter-spacing:0.04em;margin-right:6px;">Tenure: known</span></div>
     <div style="margin-bottom:0.5rem;font-size:0.67rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted)">ICP Fit</div><div class="score-breakdown" style="margin-bottom:1rem"><div class="breakdown-item"><div class="breakdown-label">Title</div><div class="breakdown-value">50</div></div><div class="breakdown-item"><div class="breakdown-label">Company Size</div><div class="breakdown-value">80</div></div><div class="breakdown-item"><div class="breakdown-label">DataStax Signal</div><div class="breakdown-value">75</div></div><div class="breakdown-item"><div class="breakdown-label">Recency</div><div class="breakdown-value">50</div></div></div><div style="margin-bottom:0.5rem;font-size:0.67rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted)">Data Confidence</div><div class="score-breakdown" style="margin-bottom:1.25rem"><div class="breakdown-item"><div class="breakdown-label">Email</div><div class="breakdown-value">100</div></div><div class="breakdown-item"><div class="breakdown-label">Bio</div><div class="breakdown-value">100</div></div><div class="breakdown-item"><div class="breakdown-label">Tenure</div><div class="breakdown-value">100</div></div></div>
     
-    <div class="messages-section"><h4>Generated Messages</h4><div class="message-card"><div class="message-type-label">Step 1 · Day 0 · Linkedin Connection</div><div class="message-text">Hi Wei, I noticed you're managing distributed systems at scale across Grab's ride, food, and payments stack. Given your Cassandra background and latency/cost constraints, I'd love to chat briefly about how others in your space are cutting infrastructure costs by 80%+ without rewrites. Worth a quick call?</div></div><div class="message-card"><div class="message-type-label">Step 2 · Day 3 · Email</div><div class="message-text">Subject: Cutting latency and ops overhead at scale
+    <div class="messages-section"><h4>Generated Messages</h4><div class="message-card"><div class="message-type-label">Step 1 · Day 0 · Linkedin Connection</div><div class="message-text">Hi Wei - saw you're leading infrastructure at Grab handling massive scale across ride, food, payments. Curious if you're exploring ways to cut latency and ops overhead on your Cassandra clusters. Would love to chat.</div></div><div class="message-card"><div class="message-type-label">Step 2 · Day 3 · Email</div><div class="message-text">Subject: Cutting latency and ops overhead at Grab's scale
 
 Hi Wei,
 
-I've been following Grab's infrastructure work across ride, food, and payments in Southeast Asia - managing Cassandra at that scale and latency profile is no small feat.
+I've been following Grab's infrastructure challenges around Southeast Asia operations, and your work scaling Cassandra across ride, food, and payments caught my attention.
 
-We've worked with teams in similar positions who found that their Cassandra clusters were hitting a ceiling: p99 latencies in the 50-200ms range eating into user experience, and compaction overhead during peak write periods requiring constant operational attention.
+We're seeing infrastructure teams like yours hit a wall with Apache Cassandra around p99 latencies (50-200ms) and operational overhead. At your scale, that compounds quickly.
 
-ScyllaDB is built on a shard-per-core architecture (no JVM) that consistently delivers single-digit ms p99 latencies and eliminates GC pauses entirely. More importantly for your ops team: it auto-tunes internally, so no more heap tuning cycles or compaction storms derailing on-call rotations.
+We work with teams running similar distributed systems workloads. One quick win we see repeatedly: replacing 10 Cassandra nodes with 1 of our platform (no application changes, same CQL/drivers) while cutting p99 latency to single-digit milliseconds. The ops lift drops too - no JVM tuning, way fewer compaction storms under peak write load.
 
-The kicker? Teams typically consolidate 10 Cassandra nodes down to 1 ScyllaDB node on equivalent hardware, cutting infrastructure costs by 80-90%. Drop-in compatible with your existing CQL and client libraries - no rewrites needed.
+A few Grab engineers already run this stack. Happy to connect you with one for a 15-min conversation about what's actually worked at comparable scale, or I can walk through how the architecture changes latency behavior under your specific access patterns.
 
-Grab and other scale-up operators have migrated with zero downtime.
-
-Would a 20-minute conversation make sense to explore whether this fits your latency and operational constraints?
+No pressure either way - just want to make sure you have options when you're evaluating next steps.
 
 Best,
-[Your name]</div></div><div class="message-card"><div class="message-type-label">Step 3 · Day 7 · Email Followup</div><div class="message-text">Subject: Latency at scale for Southeast Asia payments
+[Name]
+ScyllaDB GTM
 
-Hi Wei,
+P.S. If you're curious about numbers for your infrastructure, I can pull together a rough capacity model in under 10 minutes.</div></div><div class="message-card"><div class="message-type-label">Step 3 · Day 7 · Email Followup</div><div class="message-text">Subject: Latency at Grab's scale
 
-Following up on my earlier note. I was reading about Grab's expansion across ride, food, and payments - that's massive scale across latencies that matter.
+Wei,
 
-Most teams running Cassandra hit a wall around p99 latency under peak load. We've seen infrastructure engineers cut that by 10x (single-digit ms) while reducing node count by 80-90%. Drop-in replacement, same CQL.
+Following up on our earlier note. I've been reading about Grab's infrastructure challenges across ride, food, and payments - especially the latency-sensitive nature of those services.
 
-Worth a quick conversation?
+We're seeing teams in similar high-throughput environments cut p99 latency from 50-200ms down to single digits, while reducing node count by 80-90%. For infrastructure engineers, that usually means fewer pages and lower cloud bills.
+
+Quick 15-min call to see if this maps to your current priorities?
 
 Best,
 [Your name]</div></div></div>
@@ -538,7 +525,7 @@ Best,
     <div style="margin-bottom:1.25rem"><span style="background:rgba(148,163,184,0.08);color:#64748b;padding:3px 9px;border-radius:12px;font-size:0.67rem;font-weight:700;letter-spacing:0.04em;margin-right:6px;">Email: none</span><span style="background:rgba(168,85,247,0.12);color:#c084fc;padding:3px 9px;border-radius:12px;font-size:0.67rem;font-weight:700;letter-spacing:0.04em;margin-right:6px;">Bio: inferred</span><span style="background:rgba(34,197,94,0.12);color:#22c55e;padding:3px 9px;border-radius:12px;font-size:0.67rem;font-weight:700;letter-spacing:0.04em;margin-right:6px;">Tenure: known</span></div>
     <div style="margin-bottom:0.5rem;font-size:0.67rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted)">ICP Fit</div><div class="score-breakdown" style="margin-bottom:1rem"><div class="breakdown-item"><div class="breakdown-label">Title</div><div class="breakdown-value">30</div></div><div class="breakdown-item"><div class="breakdown-label">Company Size</div><div class="breakdown-value">90</div></div><div class="breakdown-item"><div class="breakdown-label">DataStax Signal</div><div class="breakdown-value">75</div></div><div class="breakdown-item"><div class="breakdown-label">Recency</div><div class="breakdown-value">50</div></div></div><div style="margin-bottom:0.5rem;font-size:0.67rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted)">Data Confidence</div><div class="score-breakdown" style="margin-bottom:1.25rem"><div class="breakdown-item"><div class="breakdown-label">Email</div><div class="breakdown-value">0</div></div><div class="breakdown-item"><div class="breakdown-label">Bio</div><div class="breakdown-value">50</div></div><div class="breakdown-item"><div class="breakdown-label">Tenure</div><div class="breakdown-value">100</div></div></div>
     <div class="pain-section"><h4>Pain Points</h4><ul class="pain-list"><li>Cassandra compaction storms degrading write throughput</li><li>heap tuning and GC configuration complexity</li></ul></div>
-    <div class="messages-section"><h4>Generated Messages</h4><div class="message-card"><div class="message-type-label">Step 1 · Day 0 · Linkedin Connection</div><div class="message-text">Hi Fatima, I work with database teams at scale like Walmart on reducing Cassandra compaction overhead and GC tuning complexity. Would love to connect and share what we're seeing.</div></div></div>
+    <div class="messages-section"><h4>Generated Messages</h4><div class="message-card"><div class="message-type-label">Step 1 · Day 0 · Linkedin Connection</div><div class="message-text">Hi Fatima, I work with database engineers at scale who deal with Cassandra compaction storms and GC tuning complexity. Walmart's scale makes this relevant. Would love to connect.</div></div></div>
     
   </div>
 </div>
