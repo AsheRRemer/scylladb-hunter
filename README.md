@@ -22,7 +22,7 @@ Running this tool takes about 2 minutes and delivers three outputs:
 |---|---|
 | `output/report.html` | A visual pipeline funnel showing every lead, their ICP and confidence scores, the routing decision, and the exact messages drafted for them. Open in any browser. |
 | `output/dry_run_log.json` | A full audit trail of every outreach event: who, when, what was sent, what score triggered it, and why any step was skipped. |
-| `output/leads.db` | A SQLite database with the complete lead, message, and response history for follow-up or CRM import. |
+| `output/leads.db` | A SQLite database with the complete lead and message history for follow-up or CRM import. |
 
 ---
 
@@ -110,9 +110,8 @@ Simulation outcomes (LinkedIn accept rate, email reply rate) are deterministic b
 
 Generates `output/report.html` with:
 
-- A 5-stage funnel: Gathered → Scored → Selected → Messaged → Responded
-- A sentiment breakdown row showing response outcomes across all leads
-- Per-lead cards (click to expand) showing ICP score, confidence score, routing decision, field confidence pills, score breakdown by dimension, inferred pain points, generated messages, and any logged prospect responses
+- A 4-stage funnel: Gathered → Scored → Selected → Messaged
+- Per-lead cards (click to expand) showing ICP score, confidence score, routing decision, field confidence pills, score breakdown by dimension, inferred pain points, and generated messages
 
 ---
 
@@ -194,28 +193,11 @@ The calls are present in `trigger.py` as commented-out lines. To activate: set `
 
 ---
 
-## Prospect Responses
-
-The database includes a `responses` table for logging replies from prospects:
-
-```python
-db.add_response(
-    lead_id,
-    channel="email",           # or "linkedin"
-    sentiment="meeting_booked", # positive | neutral | not_interested | unsubscribe
-    message_id=msg_id,
-    response_text="Free Thursday at 2pm."
-)
-```
-
-Responses appear in the HTML report under each lead's expanded card, color-coded by sentiment, and roll up into a pipeline-wide sentiment summary row.
-
----
 
 ## The Funnel at a Glance
 
 ```
-Gathered → Scored → Selected → Messaged → Responded
+Gathered → Scored → Selected → Messaged
    20         12        7          7           ?
 ```
 
@@ -232,7 +214,7 @@ hunter/
   personalizer.py  — Claude-powered message generation (4 message types)
   hubspot.py       — HubSpot contact upsert + email engagement logging
   reporter.py      — HTML report generation
-  db.py            — SQLite persistence (leads, messages, responses)
+  db.py            — SQLite persistence (leads, messages)
 data/
   leads_raw_pool.json   — 20-lead Apollo-format pool for dry-run mode
   hunter_email_pool.json — Hunter.io email lookup results for dry-run mode

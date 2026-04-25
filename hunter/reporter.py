@@ -30,13 +30,7 @@ def generate_report(db: Database, output_path: str):
     selected = sum(1 for l in leads if l.get("status") in ("selected", "messaged"))
     messaged = sum(1 for l in leads if l.get("status") == "messaged")
 
-    all_responses = [r for l in leads for r in l.get("responses", [])]
-    responded = sum(1 for l in leads if l.get("responses"))
-    sentiment_counts = {}
-    for r in all_responses:
-        sentiment_counts[r["sentiment"]] = sentiment_counts.get(r["sentiment"], 0) + 1
-
-    html = _render_html(leads, gathered, scored, selected, messaged, responded, sentiment_counts)
+    html = _render_html(leads, gathered, scored, selected, messaged)
 
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
     Path(output_path).write_text(html)
@@ -250,35 +244,8 @@ def _render_lead_card(lead: dict, idx: int) -> str:
 </div>"""
 
 
-def _render_sentiment_bar(sentiment_counts: dict) -> str:
-    if not sentiment_counts:
-        return ""
-    _colors = {
-        "meeting_booked":  ("#4ade80", "rgba(34,197,94,0.15)"),
-        "positive":        ("#22c55e", "rgba(34,197,94,0.10)"),
-        "neutral":         ("#fbbf24", "rgba(251,191,36,0.12)"),
-        "not_interested":  ("#f87171", "rgba(239,68,68,0.12)"),
-        "unsubscribe":     ("#ef4444", "rgba(239,68,68,0.18)"),
-    }
-    pills = ""
-    for sentiment, count in sorted(sentiment_counts.items(), key=lambda x: -x[1]):
-        fg, bg = _colors.get(sentiment, ("#94a3b8", "rgba(148,163,184,0.1)"))
-        label = sentiment.replace("_", " ").title()
-        pills += (
-            f'<span style="background:{bg};color:{fg};padding:4px 12px;border-radius:20px;'
-            f'font-size:0.72rem;font-weight:700;letter-spacing:0.04em;margin-right:8px">'
-            f'{count} {label}</span>'
-        )
-    return (
-        f'<div style="margin-bottom:2rem;display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap">'
-        f'<span style="font-size:0.72rem;font-weight:700;text-transform:uppercase;'
-        f'letter-spacing:0.07em;color:var(--text-muted);margin-right:4px">Responses</span>'
-        f'{pills}</div>'
-    )
 
-
-def _render_html(leads, gathered, scored, selected, messaged, responded=0, sentiment_counts=None) -> str:
-    sentiment_counts = sentiment_counts or {}
+def _render_html(leads, gathered, scored, selected, messaged) -> str:
     generated_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     lead_cards = "".join(_render_lead_card(l, i) for i, l in enumerate(leads))
 
@@ -329,7 +296,7 @@ def _render_html(leads, gathered, scored, selected, messaged, responded=0, senti
     .container {{ max-width: 1060px; margin: 0 auto; padding: 2rem 1.5rem; }}
     .funnel {{
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 1rem;
       margin-bottom: 2.5rem;
     }}
@@ -557,14 +524,7 @@ def _render_html(leads, gathered, scored, selected, messaged, responded=0, senti
         <div class="funnel-label">Messaged</div>
         <div class="funnel-sub">outreach sent</div>
       </div>
-      <div class="funnel-stage">
-        <div class="funnel-count">{responded}</div>
-        <div class="funnel-label">Responded</div>
-        <div class="funnel-sub">replied to outreach</div>
-      </div>
     </div>
-
-    {_render_sentiment_bar(sentiment_counts)}
 
     <div class="section-title">All Leads — click to expand</div>
     {lead_cards}
