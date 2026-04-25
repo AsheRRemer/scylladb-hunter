@@ -12,7 +12,7 @@ def generate_report(db: Database, output_path: str):
     leads = db.get_all_leads()
 
     for lead in leads:
-        for field in ("signals", "pain_points", "score_breakdown"):
+        for field in ("signals", "pain_points", "score_breakdown", "field_confidence"):
             val = lead.get(field)
             if isinstance(val, str) and val:
                 try:
@@ -23,13 +23,20 @@ def generate_report(db: Database, output_path: str):
                 lead[field] = {} if field != "pain_points" else []
 
         lead["messages"] = db.get_messages_for_lead(lead["id"])
+        lead["responses"] = db.get_responses_for_lead(lead["id"])
 
     gathered = len(leads)
     scored = sum(1 for l in leads if l.get("score") is not None)
     selected = sum(1 for l in leads if l.get("status") in ("selected", "messaged"))
     messaged = sum(1 for l in leads if l.get("status") == "messaged")
 
-    html = _render_html(leads, gathered, scored, selected, messaged)
+    all_responses = [r for l in leads for r in l.get("responses", [])]
+    responded = sum(1 for l in leads if l.get("responses"))
+    sentiment_counts = {}
+    for r in all_responses:
+        sentiment_counts[r["sentiment"]] = sentiment_counts.get(r["sentiment"], 0) + 1
+
+    html = _render_html(leads, gathered, scored, selected, messaged, responded, sentiment_counts)
 
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
     Path(output_path).write_text(html)
@@ -62,10 +69,28 @@ def _status_pill(status: str) -> str:
     )
 
 
+def _decision_pill(decision: str) -> str:
+    _colors = {
+        "selected":     ("rgba(34,197,94,0.15)",  "#4ade80"),
+        "enrich_first": ("rgba(251,191,36,0.15)", "#fbbf24"),
+        "skip":         ("rgba(239,68,68,0.12)",  "#f87171"),
+    }
+    bg, fg = _colors.get(decision, ("rgba(148,163,184,0.1)", "#94a3b8"))
+    label = decision.replace("_", " ").upper()
+    return (
+        f'<span style="background:{bg};color:{fg};padding:3px 10px;'
+        f'border-radius:20px;font-size:0.67rem;font-weight:700;'
+        f'letter-spacing:0.06em;margin-left:8px">{label}</span>'
+    )
+
+
 def _render_lead_card(lead: dict, idx: int) -> str:
     score = lead.get("score")
+    confidence_score = lead.get("confidence_score")
+    decision = lead.get("decision") or ""
     color = _score_color(score)
     score_display = f"{score:.0f}" if score is not None else "—"
+    conf_display = f"{confidence_score:.0f}" if confidence_score is not None else "—"
     breakdown = lead.get("score_breakdown") or {}
     signals = lead.get("signals") or {}
     pain_points = lead.get("pain_points") or []
@@ -84,22 +109,66 @@ def _render_lead_card(lead: dict, idx: int) -> str:
     if signals.get("recent_cassandra_post"):
         signal_tags += '<span class="tag tag-active">recently active</span>'
 
+    confidence = lead.get("field_confidence") or {}
+
+    def _conf_pill(label: str, value: str) -> str:
+        _colors = {
+            "high": ("#22c55e", "rgba(34,197,94,0.12)"),
+            "medium": ("#f59e0b", "rgba(251,191,36,0.12)"),
+            "low": ("#f87171", "rgba(239,68,68,0.12)"),
+            "inferred": ("#c084fc", "rgba(168,85,247,0.12)"),
+            "known": ("#22c55e", "rgba(34,197,94,0.12)"),
+            "partial": ("#f59e0b", "rgba(251,191,36,0.12)"),
+            "unknown": ("#f87171", "rgba(239,68,68,0.12)"),
+            "none": ("#64748b", "rgba(148,163,184,0.08)"),
+        }
+        fg, bg = _colors.get(value, ("#94a3b8", "rgba(148,163,184,0.08)"))
+        return (
+            f'<span style="background:{bg};color:{fg};padding:3px 9px;border-radius:12px;'
+            f'font-size:0.67rem;font-weight:700;letter-spacing:0.04em;margin-right:6px;">'
+            f'{label}: {value}</span>'
+        )
+
+    confidence_html = ""
+    if confidence:
+        pills = "".join(
+            _conf_pill(k.capitalize(), v)
+            for k, v in confidence.items()
+            if v
+        )
+        confidence_html = f'<div style="margin-bottom:1.25rem">{pills}</div>'
+
     breakdown_html = ""
-    if breakdown:
-        items = [
-            ("Title", breakdown.get("title")),
-            ("Company Size", breakdown.get("company_size")),
-            ("DataStax Signal", breakdown.get("datastax_signal")),
-            ("Recency", breakdown.get("activity_recency")),
+    icp_bd = breakdown.get("icp") or {}
+    conf_bd = breakdown.get("confidence") or {}
+    if icp_bd or conf_bd:
+        icp_items = [
+            ("Title",          icp_bd.get("title")),
+            ("Company Size",   icp_bd.get("company_size")),
+            ("DataStax Signal",icp_bd.get("datastax_signal")),
+            ("Recency",        icp_bd.get("activity_recency")),
         ]
-        breakdown_html = '<div class="score-breakdown">' + "".join(
-            f'<div class="breakdown-item">'
-            f'<div class="breakdown-label">{label}</div>'
-            f'<div class="breakdown-value">{val:.0f}</div>'
-            f"</div>"
-            for label, val in items
-            if val is not None
-        ) + "</div>"
+        conf_items = [
+            ("Email",   conf_bd.get("email")),
+            ("Bio",     conf_bd.get("bio")),
+            ("Tenure",  conf_bd.get("tenure")),
+        ]
+        def _bd_items(items):
+            return "".join(
+                f'<div class="breakdown-item">'
+                f'<div class="breakdown-label">{label}</div>'
+                f'<div class="breakdown-value">{val:.0f}</div>'
+                f"</div>"
+                for label, val in items if val is not None
+            )
+        breakdown_html = (
+            f'<div style="margin-bottom:0.5rem;font-size:0.67rem;font-weight:700;'
+            f'text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted)">ICP Fit</div>'
+            f'<div class="score-breakdown" style="margin-bottom:1rem">{_bd_items(icp_items)}</div>'
+            f'<div style="margin-bottom:0.5rem;font-size:0.67rem;font-weight:700;'
+            f'text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted)">Data Confidence</div>'
+            f'<div class="score-breakdown" style="margin-bottom:1.25rem">{_bd_items(conf_items)}</div>'
+        )
 
     pain_html = ""
     if pain_points:
@@ -111,16 +180,46 @@ def _render_lead_card(lead: dict, idx: int) -> str:
         cards = ""
         for msg in messages:
             msg_type = msg["message_type"].replace("_", " ").title()
+            step = msg.get("step")
+            day = msg.get("scheduled_day")
+            step_label = f"Step {step} · Day {day} · " if step is not None else ""
             content = msg["content"].replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
             cards += (
                 f'<div class="message-card">'
-                f'<div class="message-type-label">{msg_type}</div>'
+                f'<div class="message-type-label">{step_label}{msg_type}</div>'
                 f'<div class="message-text">{content}</div>'
                 f"</div>"
             )
         messages_html = f'<div class="messages-section"><h4>Generated Messages</h4>{cards}</div>'
     else:
         messages_html = '<div class="messages-section"><p class="no-messages">No messages generated (below threshold or not yet processed)</p></div>'
+
+    responses = lead.get("responses", [])
+    responses_html = ""
+    if responses:
+        _sentiment_colors = {
+            "positive":        ("#4ade80", "rgba(34,197,94,0.12)"),
+            "meeting_booked":  ("#4ade80", "rgba(34,197,94,0.20)"),
+            "neutral":         ("#fbbf24", "rgba(251,191,36,0.12)"),
+            "not_interested":  ("#f87171", "rgba(239,68,68,0.12)"),
+            "unsubscribe":     ("#f87171", "rgba(239,68,68,0.18)"),
+        }
+        rcards = ""
+        for r in responses:
+            fg, bg = _sentiment_colors.get(r["sentiment"], ("#94a3b8", "rgba(148,163,184,0.1)"))
+            label = r["sentiment"].replace("_", " ").title()
+            channel = r["channel"].replace("_", " ").title()
+            text = (r.get("response_text") or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+            text_html = f'<div class="message-text" style="margin-top:0.5rem">{text}</div>' if text else ""
+            rcards += (
+                f'<div class="message-card" style="border-color:{fg}22">'
+                f'<div class="message-type-label" style="color:{fg}">'
+                f'{channel} · <span style="background:{bg};color:{fg};padding:1px 7px;border-radius:10px">{label}</span>'
+                f'</div>'
+                f'{text_html}'
+                f'</div>'
+            )
+        responses_html = f'<div class="messages-section"><h4>Prospect Responses</h4>{rcards}</div>'
 
     return f"""
 <div class="lead-card">
@@ -129,23 +228,57 @@ def _render_lead_card(lead: dict, idx: int) -> str:
       {score_display}
     </div>
     <div class="lead-info">
-      <div class="lead-name">{lead["name"]}</div>
+      <div class="lead-name">{lead["name"]}{_decision_pill(decision) if decision else ""}</div>
       <div class="lead-meta">{lead["title"]} · {lead["company"]} · {lead.get("location","")}</div>
       <div class="lead-tags">{tech_tags}{signal_tags}</div>
+    </div>
+    <div style="text-align:center;flex-shrink:0">
+      <div style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:2px">Conf</div>
+      <div style="font-size:0.9rem;font-weight:800;color:var(--text-muted)">{conf_display}</div>
     </div>
     {_status_pill(lead.get("status","gathered"))}
     <div class="expand-icon" id="icon_{card_id}">▸</div>
   </div>
   <div class="lead-detail" id="{card_id}">
     <p class="lead-bio">"{lead.get("bio","")}"</p>
+    {confidence_html}
     {breakdown_html}
     {pain_html}
     {messages_html}
+    {responses_html}
   </div>
 </div>"""
 
 
-def _render_html(leads, gathered, scored, selected, messaged) -> str:
+def _render_sentiment_bar(sentiment_counts: dict) -> str:
+    if not sentiment_counts:
+        return ""
+    _colors = {
+        "meeting_booked":  ("#4ade80", "rgba(34,197,94,0.15)"),
+        "positive":        ("#22c55e", "rgba(34,197,94,0.10)"),
+        "neutral":         ("#fbbf24", "rgba(251,191,36,0.12)"),
+        "not_interested":  ("#f87171", "rgba(239,68,68,0.12)"),
+        "unsubscribe":     ("#ef4444", "rgba(239,68,68,0.18)"),
+    }
+    pills = ""
+    for sentiment, count in sorted(sentiment_counts.items(), key=lambda x: -x[1]):
+        fg, bg = _colors.get(sentiment, ("#94a3b8", "rgba(148,163,184,0.1)"))
+        label = sentiment.replace("_", " ").title()
+        pills += (
+            f'<span style="background:{bg};color:{fg};padding:4px 12px;border-radius:20px;'
+            f'font-size:0.72rem;font-weight:700;letter-spacing:0.04em;margin-right:8px">'
+            f'{count} {label}</span>'
+        )
+    return (
+        f'<div style="margin-bottom:2rem;display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap">'
+        f'<span style="font-size:0.72rem;font-weight:700;text-transform:uppercase;'
+        f'letter-spacing:0.07em;color:var(--text-muted);margin-right:4px">Responses</span>'
+        f'{pills}</div>'
+    )
+
+
+def _render_html(leads, gathered, scored, selected, messaged, responded=0, sentiment_counts=None) -> str:
+    sentiment_counts = sentiment_counts or {}
     generated_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     lead_cards = "".join(_render_lead_card(l, i) for i, l in enumerate(leads))
 
@@ -196,7 +329,7 @@ def _render_html(leads, gathered, scored, selected, messaged) -> str:
     .container {{ max-width: 1060px; margin: 0 auto; padding: 2rem 1.5rem; }}
     .funnel {{
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 1rem;
       margin-bottom: 2.5rem;
     }}
@@ -424,7 +557,14 @@ def _render_html(leads, gathered, scored, selected, messaged) -> str:
         <div class="funnel-label">Messaged</div>
         <div class="funnel-sub">outreach sent</div>
       </div>
+      <div class="funnel-stage">
+        <div class="funnel-count">{responded}</div>
+        <div class="funnel-label">Responded</div>
+        <div class="funnel-sub">replied to outreach</div>
+      </div>
     </div>
+
+    {_render_sentiment_bar(sentiment_counts)}
 
     <div class="section-title">All Leads — click to expand</div>
     {lead_cards}

@@ -1,6 +1,6 @@
 # ScyllaDB GTM Hunter
 
-**What it does:** Finds the right people at the right companies, scores them on how likely they are to switch from DataStax or Cassandra, and drafts a personalized outreach message for each one — automatically.
+**What it does:** Finds the right people at the right companies, scores them on how likely they are to switch from DataStax or Cassandra, enriches missing data, and drafts a personalized multi-step outreach sequence for each one — automatically.
 
 ---
 
@@ -20,45 +20,125 @@ Running this tool takes about 2 minutes and delivers three outputs:
 
 | Output | What it is |
 |---|---|
-| `output/report.html` | A visual pipeline funnel showing every lead, their score, why they were selected, and the exact messages drafted for them. Open in any browser. |
-| `output/dry_run_log.json` | A full audit trail of every outreach event: who, when, what was sent, and what score triggered it. |
-| `output/leads.db` | A SQLite database with the complete lead and message history for follow-up or CRM import. |
+| `output/report.html` | A visual pipeline funnel showing every lead, their ICP and confidence scores, the routing decision, and the exact messages drafted for them. Open in any browser. |
+| `output/dry_run_log.json` | A full audit trail of every outreach event: who, when, what was sent, what score triggered it, and why any step was skipped. |
+| `output/leads.db` | A SQLite database with the complete lead, message, and response history for follow-up or CRM import. |
 
 ---
 
-## How Leads Are Scored
+## Pipeline Stages
 
-Every lead gets a score from 0–100 based on four factors:
+```
+Gather → Enrich → Score → Sequence → Report
+```
+
+### Stage 1 — Gather
+
+Loads leads from Apollo.io's People Search API (or `data/leads_raw_pool.json` in dry-run mode). Applies a title pre-filter to disqualify non-technical roles (sales, HR, recruiting, marketing) before any scoring happens.
+
+Deduplication runs at this stage: leads already marked as `messaged` in the database are skipped on subsequent runs to prevent duplicate outreach.
+
+### Stage 1.5 — Enrich
+
+For each pre-qualified lead, the enricher fills gaps in the raw Apollo data:
+
+- **Email** — if Apollo returned no email, attempts a Hunter.io domain lookup. In dry-run mode, looks up the lead in `data/hunter_email_pool.json` instead of hitting the live API. Assigns a confidence level based on Hunter's score: `high` (≥80), `medium` (≥50), or `low`.
+- **Bio / Pain points** — if the Apollo headline is missing, infers relevant pain points from title and seniority level rather than leaving the field blank.
+- **Tenure** — calculates months in current role from employment history. Marks as `known`, `partial`, or `unknown`.
+
+Every lead carries a `field_confidence` dict after this stage: `{email, bio, tenure}`.
+
+#### Dry-run email pool
+
+`data/hunter_email_pool.json` simulates the subset of leads whose emails Hunter.io would find. Each entry mirrors a Hunter response and is keyed by `lead_id`:
+
+```json
+[
+  {
+    "lead_id": "apollo_pool_002",
+    "first_name": "Lin",
+    "last_name": "Zhao",
+    "domain": "comcast.com",
+    "email": "l.zhao@comcast.com",
+    "score": 94
+  }
+]
+```
+
+Leads not in the pool come back with `email_confidence: none` — exactly as they would if Hunter returned no result. This gives full control over which leads get enriched in testing without any randomness.
+
+### Stage 2 — Score
+
+Two independent scores are computed for each lead:
+
+#### ICP Score (0–100) — how good a fit is this person
 
 | Factor | Weight | What it measures |
 |---|---|---|
-| **Title seniority** | 35% | CTO/VP scores highest; junior engineers score lowest. We want decision-makers. |
-| **DataStax signal** | 30% | Do they mention DataStax Enterprise, Cassandra, or related tools in their profile? The stronger the signal, the more relevant the conversation. |
-| **Company size** | 20% | Larger companies have larger infrastructure bills — and larger potential deals. |
-| **Activity recency** | 15% | Someone who posted about Cassandra 3 days ago is warmer than someone who hasn't been active in 3 months. |
+| **Title seniority** | 35% | CTO/VP scores highest; junior engineers score lowest |
+| **DataStax signal** | 40% | Cassandra usage, DataStax Enterprise, alumni history |
+| **Company size** | 20% | Larger infrastructure = larger pain = larger deal |
+| **Activity recency** | 5% | Recent Cassandra activity signals active evaluation |
 
-Only leads above the configured threshold (default: **60**) receive outreach messages.
+#### Confidence Score (0–100) — how much we trust the data
+
+Averaged from three field confidence ratings: email (0/30/60/100), bio (0/50/100), tenure (0/50/100).
+
+#### Routing Decision
+
+| ICP | Confidence | Decision |
+|---|---|---|
+| ≥ threshold | ≥ 70 | `selected` — full 3-step sequence |
+| ≥ threshold | < 70 | `enrich_first` — LinkedIn connection only, no cold email until data is filled |
+| < threshold | any | `skip` — never rejected solely for missing data |
+
+Default thresholds: ICP `60`, confidence `70` (both configurable in `config.yaml`).
+
+### Stage 3+4 — Sequence Engine
+
+Runs a deterministic simulated outbound sequence for each qualifying lead:
+
+| Step | Day | Channel | Condition |
+|---|---|---|---|
+| 1 | 0 | LinkedIn connection request | Always fires for `selected` and `enrich_first` |
+| 2 | 3 | Email | Skipped if LinkedIn accepted, or if `enrich_first` |
+| 3 | 7 | Email follow-up | Skipped if LinkedIn accepted, email replied, or `enrich_first` |
+
+Simulation outcomes (LinkedIn accept rate, email reply rate) are deterministic by lead ID so results are reproducible across runs.
+
+### Stage 5 — Report
+
+Generates `output/report.html` with:
+
+- A 5-stage funnel: Gathered → Scored → Selected → Messaged → Responded
+- A sentiment breakdown row showing response outcomes across all leads
+- Per-lead cards (click to expand) showing ICP score, confidence score, routing decision, field confidence pills, score breakdown by dimension, inferred pain points, generated messages, and any logged prospect responses
 
 ---
 
 ## How Messages Are Written
 
-For each selected lead, the AI drafts a personalized message that:
+For each selected lead the AI (Claude Haiku) drafts a message tailored to the step type:
 
-- References their specific role and company context
-- Connects ScyllaDB's real technical advantages to their likely pain points (GC pauses, licensing cost, operational overhead)
-- Ends with a single, low-friction call to action
+| Type | Format | Constraint |
+|---|---|---|
+| `linkedin_connection` | Connection request note | ≤ 250 characters, no product pitch |
+| `linkedin_dm` | Direct message | ≤ 150 words, peer-to-peer tone |
+| `email` | Subject + body | ≤ 200 word body |
+| `email_followup` | Subject + body, new angle | ≤ 100 word body |
 
-The AI knows ScyllaDB's actual differentiators: 10x lower p99 latency, elimination of JVM GC pauses, 80–90% infrastructure cost reduction vs equivalent Cassandra deployments, and full Cassandra API compatibility (no rewrites needed).
+All messages reference the lead's specific role and company, connect ScyllaDB's differentiators to their likely pain points, and end with a single low-friction CTA. Em dashes are explicitly prohibited.
 
-Messages are drafted but **not sent** by default (`dry_run: true` in `config.yaml`). A human reviews and sends.
+The AI is briefed on ScyllaDB's real technical advantages: 10x lower p99 latency, elimination of JVM GC pauses, 80–90% infrastructure cost reduction, and full Cassandra API compatibility.
+
+Messages are drafted but **not sent** by default (`dry_run: true`). A human reviews before anything goes out.
 
 ---
 
 ## Quick Start
 
 ```bash
-# 1. Install dependencies (Python 3.11+)
+# 1. Install dependencies
 pip install -r requirements.txt
 
 # 2. Set your Anthropic API key
@@ -79,32 +159,90 @@ Everything is controlled from `config.yaml`:
 
 ```yaml
 pipeline:
-  max_leads: 10              # How many leads to process
-  min_score_threshold: 60    # Minimum score to receive outreach
+  max_leads: 20
+  min_score_threshold: 60    # ICP threshold — leads below this are skipped
   dry_run: true              # true = draft only, false = log as sent
-  message_types:
-    - linkedin_dm
-    - email
+
+scoring:
+  title_seniority_weight: 0.35
+  company_size_weight: 0.20
+  datastax_signal_weight: 0.40
+  activity_recency_weight: 0.05
+  confidence_threshold: 70   # below this → enrich_first, not full sequence
+
+sequence:
+  linkedin_accept_rate: 0.35  # used in dry-run simulation
+  email_reply_rate: 0.20
+
+apollo:
+  api_key: ""                # or set APOLLO_API_KEY env var
+
+hubspot:
+  api_key: ""                # or set HUBSPOT_API_KEY env var
 ```
 
-To run against a real list, replace `data/leads_seed.json` with your own lead data following the same JSON structure.
+---
+
+## HubSpot Integration (ready, not wired)
+
+`hunter/hubspot.py` contains a complete implementation for:
+
+- Upserting the lead as a HubSpot contact at selection time
+- Logging sent emails as CRM email engagements associated to the contact
+
+The calls are present in `trigger.py` as commented-out lines. To activate: set `HUBSPOT_API_KEY` and uncomment the two lines in `trigger.py`.
+
+---
+
+## Prospect Responses
+
+The database includes a `responses` table for logging replies from prospects:
+
+```python
+db.add_response(
+    lead_id,
+    channel="email",           # or "linkedin"
+    sentiment="meeting_booked", # positive | neutral | not_interested | unsubscribe
+    message_id=msg_id,
+    response_text="Free Thursday at 2pm."
+)
+```
+
+Responses appear in the HTML report under each lead's expanded card, color-coded by sentiment, and roll up into a pipeline-wide sentiment summary row.
 
 ---
 
 ## The Funnel at a Glance
 
 ```
-Gathered → Scored → Selected → Messaged
-   10         10        7          7
+Gathered → Scored → Selected → Messaged → Responded
+   20         12        7          7           ?
 ```
-
-Each stage is visible in the HTML report with lead-by-lead detail.
 
 ---
 
-## What ScyllaDB Gets From This
+## Project Structure
 
-A senior engineer at a Comcast or T-Mobile who is actively feeling DataStax licensing pain is worth an enormous amount. This tool surfaces them systematically, ensures outreach is relevant and human-feeling, and keeps a full audit trail — so the GTM team spends time on conversations, not research.
+```
+hunter/
+  lead_finder.py   — Apollo API fetch + normalization + pre-filter + dedup
+  enricher.py      — email lookup, pain point inference, tenure calculation
+  scorer.py        — ICP score, confidence score, routing decision
+  trigger.py       — multi-step sequence engine with deterministic simulation
+  personalizer.py  — Claude-powered message generation (4 message types)
+  hubspot.py       — HubSpot contact upsert + email engagement logging
+  reporter.py      — HTML report generation
+  db.py            — SQLite persistence (leads, messages, responses)
+data/
+  leads_raw_pool.json   — 20-lead Apollo-format pool for dry-run mode
+  hunter_email_pool.json — Hunter.io email lookup results for dry-run mode
+output/
+  report.html
+  dry_run_log.json
+  leads.db
+config.yaml
+main.py
+```
 
 ---
 

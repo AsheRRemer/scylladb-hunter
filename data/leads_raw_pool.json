@@ -1,430 +1,618 @@
 [
   {
     "id": "pool_001",
+    "first_name": "Karan",
+    "last_name": "Mehta",
     "name": "Karan Mehta",
     "title": "VP of Platform Engineering",
-    "company": "T-Mobile",
-    "company_size": 71000,
-    "linkedin_url": "https://linkedin.com/in/karan-mehta-tmobile",
-    "email": "karan.mehta@t-mobile.com",
-    "location": "Bellevue, WA",
-    "signals": {
-      "datastax_signal": true,
-      "cassandra_usage": true,
-      "datastax_employee_history": false,
-      "recent_cassandra_post": true,
-      "tech_stack_mentions": ["DataStax Enterprise", "Cassandra", "Kubernetes", "AWS"]
+    "headline": "VP Platform Engineering at T-Mobile | Subscriber data infrastructure for 120M+ customers | Previously AT&T",
+    "email": "k.mehta@t-mobile.com",
+    "email_status": "verified",
+    "linkedin_url": "https://www.linkedin.com/in/karan-mehta-tmobile",
+    "city": "Bellevue",
+    "state": "Washington",
+    "country": "United States",
+    "seniority": "vp",
+    "departments": ["engineering"],
+    "technologies": ["Apache Cassandra", "DataStax Enterprise", "Apache Kafka", "Kubernetes"],
+    "organization": {
+      "id": "org_tmobile",
+      "name": "T-Mobile",
+      "website_url": "https://t-mobile.com",
+      "linkedin_url": "https://linkedin.com/company/t-mobile",
+      "num_employees": 71000,
+      "industry": "Telecommunications"
     },
-    "activity_days_ago": 4,
-    "bio": "VP Platform Engineering at T-Mobile. DataStax Enterprise backs our subscriber data platform. 5G is tripling write throughput and our node count (and licensing bill) is scaling linearly.",
-    "pain_points": [
-      "5G subscriber growth tripling DataStax node count and licensing cost",
-      "Per-node licensing model becomes punishing at telco scale",
-      "Need Cassandra API compatibility — too many services to rewrite"
+    "employment_history": [
+      {
+        "id": "emp_001a",
+        "title": "VP of Platform Engineering",
+        "organization_name": "T-Mobile",
+        "start_date": "2020-03-01",
+        "end_date": null,
+        "current": true
+      },
+      {
+        "id": "emp_001b",
+        "title": "Director of Infrastructure Engineering",
+        "organization_name": "AT&T",
+        "start_date": "2016-06-01",
+        "end_date": "2020-02-01",
+        "current": false
+      }
     ]
   },
   {
     "id": "pool_002",
+    "first_name": "Lin",
+    "last_name": "Zhao",
     "name": "Lin Zhao",
     "title": "Principal Database Architect",
-    "company": "Comcast",
-    "company_size": 180000,
-    "linkedin_url": "https://linkedin.com/in/lin-zhao-comcast",
-    "email": "lin.zhao@comcast.com",
-    "location": "Philadelphia, PA",
-    "signals": {
-      "datastax_signal": true,
-      "cassandra_usage": true,
-      "datastax_employee_history": true,
-      "recent_cassandra_post": true,
-      "tech_stack_mentions": ["DataStax Enterprise", "Cassandra", "Spark", "Azure"]
+    "headline": "Principal DB Architect at Comcast | Former DataStax Solutions Engineer | Evaluating next-gen Cassandra alternatives",
+    "email": "l.zhao@comcast.com",
+    "email_status": "verified",
+    "linkedin_url": "https://www.linkedin.com/in/lin-zhao-comcast",
+    "city": "Philadelphia",
+    "state": "Pennsylvania",
+    "country": "United States",
+    "seniority": "director",
+    "departments": ["engineering"],
+    "technologies": ["Apache Cassandra", "DataStax Enterprise", "Apache Spark", "Microsoft Azure"],
+    "organization": {
+      "id": "org_comcast",
+      "name": "Comcast",
+      "website_url": "https://comcast.com",
+      "linkedin_url": "https://linkedin.com/company/comcast",
+      "num_employees": 180000,
+      "industry": "Telecommunications"
     },
-    "activity_days_ago": 6,
-    "bio": "Principal DB Architect at Comcast. Former DataStax Solutions Engineer — I know the product inside out. Now evaluating alternatives as our 2026 contract renewal approaches. Storage costs and compaction overhead are the main pain points.",
-    "pain_points": [
-      "DataStax contract renewal is coming — costs have grown 3x since 2019",
-      "Compaction management consuming significant engineering cycles",
-      "Former DataStax SE: I know exactly where the product falls short"
+    "employment_history": [
+      {
+        "id": "emp_002a",
+        "title": "Principal Database Architect",
+        "organization_name": "Comcast",
+        "start_date": "2019-08-01",
+        "end_date": null,
+        "current": true
+      },
+      {
+        "id": "emp_002b",
+        "title": "Senior Solutions Engineer",
+        "organization_name": "DataStax",
+        "start_date": "2015-02-01",
+        "end_date": "2019-07-01",
+        "current": false
+      }
     ]
   },
   {
     "id": "pool_003",
+    "first_name": "Priya",
+    "last_name": "Nair",
     "name": "Priya Nair",
     "title": "Head of Infrastructure",
-    "company": "Nubank",
-    "company_size": 45000,
-    "linkedin_url": "https://linkedin.com/in/priya-nair-nubank",
-    "email": "priya.nair@nubank.com.br",
-    "location": "São Paulo, Brazil",
-    "signals": {
-      "datastax_signal": true,
-      "cassandra_usage": true,
-      "datastax_employee_history": false,
-      "recent_cassandra_post": true,
-      "tech_stack_mentions": ["Cassandra", "DataStax", "Kafka", "Kubernetes", "GCP"]
+    "headline": "Head of Infrastructure at Nubank | Scaling distributed data systems for 90M+ customers across Latin America",
+    "email": "p.nair@nubank.com.br",
+    "email_status": "verified",
+    "linkedin_url": "https://www.linkedin.com/in/priya-nair-nubank",
+    "city": "São Paulo",
+    "state": null,
+    "country": "Brazil",
+    "seniority": "director",
+    "departments": ["engineering"],
+    "technologies": ["Apache Cassandra", "DataStax", "Apache Kafka", "Kubernetes", "Google Cloud"],
+    "organization": {
+      "id": "org_nubank",
+      "name": "Nubank",
+      "website_url": "https://nubank.com.br",
+      "linkedin_url": "https://linkedin.com/company/nubank",
+      "num_employees": 45000,
+      "industry": "Financial Services"
     },
-    "activity_days_ago": 2,
-    "bio": "Head of Infrastructure at Nubank. We serve 90M+ customers across Latin America. Infrastructure cost efficiency is a board-level KPI. Cassandra underpins our core financial ledger.",
-    "pain_points": [
-      "Infrastructure cost is a board-level KPI — every dollar of DataStax licensing is scrutinized",
-      "Latency SLAs tightening as we expand into Mexico and Colombia",
-      "DataStax contract growing faster than customer growth"
+    "employment_history": [
+      {
+        "id": "emp_003a",
+        "title": "Head of Infrastructure",
+        "organization_name": "Nubank",
+        "start_date": "2021-06-01",
+        "end_date": null,
+        "current": true
+      }
     ]
   },
   {
     "id": "pool_004",
+    "first_name": "Omar",
+    "last_name": "Al-Farsi",
     "name": "Omar Al-Farsi",
     "title": "Staff Platform Engineer",
-    "company": "Netflix",
-    "company_size": 12000,
-    "linkedin_url": "https://linkedin.com/in/omar-alfarsi-netflix",
-    "email": "o.alfarsi@netflix.com",
-    "location": "Los Gatos, CA",
-    "signals": {
-      "datastax_signal": true,
-      "cassandra_usage": true,
-      "datastax_employee_history": false,
-      "recent_cassandra_post": true,
-      "tech_stack_mentions": ["Cassandra", "DataStax", "Kafka", "Flink", "AWS"]
+    "headline": null,
+    "email": null,
+    "email_status": null,
+    "linkedin_url": "https://www.linkedin.com/in/omar-alfarsi-netflix",
+    "city": "Los Gatos",
+    "state": "California",
+    "country": "United States",
+    "seniority": "senior",
+    "departments": ["engineering"],
+    "technologies": ["Apache Cassandra", "DataStax", "Apache Kafka", "Apache Flink", "Amazon Web Services"],
+    "organization": {
+      "id": "org_netflix",
+      "name": "Netflix",
+      "website_url": "https://netflix.com",
+      "linkedin_url": "https://linkedin.com/company/netflix",
+      "num_employees": 12000,
+      "industry": "Entertainment"
     },
-    "activity_days_ago": 1,
-    "bio": "Staff Engineer on Netflix Storage Platform. Managing one of the world's largest Cassandra deployments. Published internally on C++ storage alternatives. Data volumes tripled post-pandemic.",
-    "pain_points": [
-      "Operational burden of managing large Cassandra clusters is unsustainable at our scale",
-      "Compaction consuming disproportionate engineering effort",
-      "Evaluating C++ storage engines — JVM GC pauses are a known pain point"
-    ]
+    "employment_history": []
   },
   {
     "id": "pool_005",
+    "first_name": "Jake",
+    "last_name": "Morrison",
     "name": "Jake Morrison",
     "title": "Senior Backend Engineer",
-    "company": "eBay",
-    "company_size": 11300,
-    "linkedin_url": "https://linkedin.com/in/jake-morrison-ebay",
+    "headline": "Senior Backend Engineer at eBay | Real-time catalog and listings platform | Cassandra at 2B+ listing scale",
     "email": "jake.morrison@ebay.com",
-    "location": "San Jose, CA",
-    "signals": {
-      "datastax_signal": true,
-      "cassandra_usage": true,
-      "datastax_employee_history": false,
-      "recent_cassandra_post": false,
-      "tech_stack_mentions": ["Cassandra", "DataStax Enterprise", "Kafka", "Java", "GCP"]
+    "email_status": "verified",
+    "linkedin_url": "https://www.linkedin.com/in/jake-morrison-ebay",
+    "city": "San Jose",
+    "state": "California",
+    "country": "United States",
+    "seniority": "senior",
+    "departments": ["engineering"],
+    "technologies": ["Apache Cassandra", "DataStax Enterprise", "Apache Kafka", "Java", "Google Cloud"],
+    "organization": {
+      "id": "org_ebay",
+      "name": "eBay",
+      "website_url": "https://ebay.com",
+      "linkedin_url": "https://linkedin.com/company/ebay",
+      "num_employees": 11300,
+      "industry": "E-Commerce"
     },
-    "activity_days_ago": 8,
-    "bio": "Senior Backend Engineer at eBay working on the listings and catalog real-time data platform. DataStax Cassandra backing 2B+ active listings. Peak load during Q4 is brutal.",
-    "pain_points": [
-      "JVM GC pauses spiking during Q4 peak causing listing API latency",
-      "DataStax licensing cost scaling with listings volume growth"
-    ]
+    "employment_history": []
   },
   {
     "id": "pool_006",
+    "first_name": "Fatima",
+    "last_name": "Al-Hassan",
     "name": "Fatima Al-Hassan",
     "title": "Database Engineer",
-    "company": "Walmart Global Tech",
-    "company_size": 12000,
-    "linkedin_url": "https://linkedin.com/in/fatima-alhassan-walmart",
-    "email": "fatima.alhassan@walmart.com",
-    "location": "Bentonville, AR",
-    "signals": {
-      "datastax_signal": true,
-      "cassandra_usage": true,
-      "datastax_employee_history": false,
-      "recent_cassandra_post": false,
-      "tech_stack_mentions": ["DataStax Enterprise", "Cassandra", "Spark", "Azure", "Flink"]
+    "headline": null,
+    "email": null,
+    "email_status": null,
+    "linkedin_url": "https://www.linkedin.com/in/fatima-alhassan-walmart",
+    "city": "Bentonville",
+    "state": "Arkansas",
+    "country": "United States",
+    "seniority": "senior",
+    "departments": ["engineering"],
+    "technologies": ["DataStax Enterprise", "Apache Cassandra", "Apache Spark", "Microsoft Azure", "Apache Flink"],
+    "organization": {
+      "id": "org_walmart",
+      "name": "Walmart Global Tech",
+      "website_url": "https://walmart.com",
+      "linkedin_url": "https://linkedin.com/company/walmart",
+      "num_employees": 12000,
+      "industry": "Retail"
     },
-    "activity_days_ago": 10,
-    "bio": "Database Engineer at Walmart Global Tech. DataStax Cassandra backing the real-time inventory platform for 500M+ SKUs. Black Friday every year is my reliability audit.",
-    "pain_points": [
-      "Cassandra compaction storms during Black Friday degrading inventory read latency",
-      "DataStax node-based licensing makes peak-capacity planning expensive"
+    "employment_history": [
+      {
+        "id": "emp_006a",
+        "title": "Database Engineer",
+        "organization_name": "Walmart Global Tech",
+        "start_date": "2021-04-01",
+        "end_date": null,
+        "current": true
+      },
+      {
+        "id": "emp_006b",
+        "title": "Data Engineer",
+        "organization_name": "Target Corporation",
+        "start_date": "2018-07-01",
+        "end_date": "2021-03-01",
+        "current": false
+      }
     ]
   },
   {
     "id": "pool_007",
+    "first_name": "Chen",
+    "last_name": "Wei",
     "name": "Chen Wei",
     "title": "Senior Data Engineer",
-    "company": "Intuit",
-    "company_size": 18000,
-    "linkedin_url": "https://linkedin.com/in/chen-wei-intuit",
+    "headline": null,
     "email": "chen.wei@intuit.com",
-    "location": "Mountain View, CA",
-    "signals": {
-      "datastax_signal": false,
-      "cassandra_usage": true,
-      "datastax_employee_history": false,
-      "recent_cassandra_post": true,
-      "tech_stack_mentions": ["Cassandra", "Kafka", "Flink", "Snowflake", "AWS"]
+    "email_status": "verified",
+    "linkedin_url": "https://www.linkedin.com/in/chen-wei-intuit",
+    "city": "Mountain View",
+    "state": "California",
+    "country": "United States",
+    "seniority": "senior",
+    "departments": ["engineering"],
+    "technologies": ["Apache Cassandra", "Apache Kafka", "Apache Flink", "Snowflake", "Amazon Web Services"],
+    "organization": {
+      "id": "org_intuit",
+      "name": "Intuit",
+      "website_url": "https://intuit.com",
+      "linkedin_url": "https://linkedin.com/company/intuit",
+      "num_employees": 18000,
+      "industry": "Financial Software"
     },
-    "activity_days_ago": 6,
-    "bio": "Senior Data Engineer at Intuit on the real-time data platform behind TurboTax and QuickBooks. Cassandra at its limits every April. JVM heap tuning is a pre-tax-season ritual.",
-    "pain_points": [
-      "JVM heap tuning required every March ahead of tax season filing peak",
-      "Write latency spikes during April filing crunch affecting user experience"
-    ]
+    "employment_history": []
   },
   {
     "id": "pool_008",
+    "first_name": "Wei",
+    "last_name": "Zhang",
     "name": "Wei Zhang",
     "title": "Senior Infrastructure Engineer",
-    "company": "Grab",
-    "company_size": 9000,
-    "linkedin_url": "https://linkedin.com/in/wei-zhang-grab",
-    "email": "wei.zhang@grab.com",
-    "location": "Singapore",
-    "signals": {
-      "datastax_signal": true,
-      "cassandra_usage": true,
-      "datastax_employee_history": false,
-      "recent_cassandra_post": false,
-      "tech_stack_mentions": ["DataStax Enterprise", "Cassandra", "Go", "Kafka", "AWS"]
+    "headline": "Senior Infrastructure Engineer at Grab | Distributed systems for ride, food, and payments across Southeast Asia",
+    "email": null,
+    "email_status": null,
+    "linkedin_url": "https://www.linkedin.com/in/wei-zhang-grab",
+    "city": "Singapore",
+    "state": null,
+    "country": "Singapore",
+    "seniority": "senior",
+    "departments": ["engineering"],
+    "technologies": ["DataStax Enterprise", "Apache Cassandra", "Go", "Apache Kafka", "Amazon Web Services"],
+    "organization": {
+      "id": "org_grab",
+      "name": "Grab",
+      "website_url": "https://grab.com",
+      "linkedin_url": "https://linkedin.com/company/grab",
+      "num_employees": 9000,
+      "industry": "Technology"
     },
-    "activity_days_ago": 15,
-    "bio": "Senior Infrastructure Engineer at Grab. DataStax Cassandra powers ride-matching and payments across Southeast Asia. Cross-region latency is critical — 50ms delay means a lost booking.",
-    "pain_points": [
-      "Cross-region latency adding 40-80ms to booking flows in Vietnam and Philippines",
-      "DataStax licensing growing with regional expansion"
+    "employment_history": [
+      {
+        "id": "emp_008a",
+        "title": "Senior Infrastructure Engineer",
+        "organization_name": "Grab",
+        "start_date": "2022-01-01",
+        "end_date": null,
+        "current": true
+      }
     ]
   },
   {
     "id": "pool_009",
+    "first_name": "Tom",
+    "last_name": "Richards",
     "name": "Tom Richards",
     "title": "Product Manager",
-    "company": "Stripe",
-    "company_size": 7000,
-    "linkedin_url": "https://linkedin.com/in/tom-richards-stripe",
-    "email": "tom.richards@stripe.com",
-    "location": "San Francisco, CA",
-    "signals": {
-      "datastax_signal": false,
-      "cassandra_usage": true,
-      "datastax_employee_history": false,
-      "recent_cassandra_post": true,
-      "tech_stack_mentions": ["Cassandra", "Kafka", "PostgreSQL"]
+    "headline": "Product Manager at Stripe | Payments Infrastructure | Working at the intersection of reliability and developer experience",
+    "email": "t.richards@stripe.com",
+    "email_status": "verified",
+    "linkedin_url": "https://www.linkedin.com/in/tom-richards-stripe",
+    "city": "San Francisco",
+    "state": "California",
+    "country": "United States",
+    "seniority": "manager",
+    "departments": ["product"],
+    "technologies": ["Apache Cassandra", "Apache Kafka", "PostgreSQL"],
+    "organization": {
+      "id": "org_stripe",
+      "name": "Stripe",
+      "website_url": "https://stripe.com",
+      "linkedin_url": "https://linkedin.com/company/stripe",
+      "num_employees": 7000,
+      "industry": "Financial Technology"
     },
-    "activity_days_ago": 25,
-    "bio": "Product Manager at Stripe for the Payments Infrastructure team. Work closely with the backend engineers who operate our Cassandra clusters.",
-    "pain_points": []
+    "employment_history": [
+      {
+        "id": "emp_009a",
+        "title": "Product Manager",
+        "organization_name": "Stripe",
+        "start_date": "2021-09-01",
+        "end_date": null,
+        "current": true
+      }
+    ]
   },
   {
     "id": "pool_010",
+    "first_name": "Aisha",
+    "last_name": "Patel",
     "name": "Aisha Patel",
     "title": "Data Analyst",
-    "company": "Netflix",
-    "company_size": 12000,
-    "linkedin_url": "https://linkedin.com/in/aisha-patel-netflix",
-    "email": "aisha.patel@netflix.com",
-    "location": "Los Gatos, CA",
-    "signals": {
-      "datastax_signal": false,
-      "cassandra_usage": true,
-      "datastax_employee_history": false,
-      "recent_cassandra_post": false,
-      "tech_stack_mentions": ["Cassandra", "Presto", "Tableau", "Spark"]
+    "headline": null,
+    "email": null,
+    "email_status": null,
+    "linkedin_url": "https://www.linkedin.com/in/aisha-patel-netflix",
+    "city": "Los Gatos",
+    "state": "California",
+    "country": "United States",
+    "seniority": "entry",
+    "departments": ["analytics"],
+    "technologies": ["Apache Cassandra", "Presto", "Tableau", "Apache Spark"],
+    "organization": {
+      "id": "org_netflix",
+      "name": "Netflix",
+      "website_url": "https://netflix.com",
+      "linkedin_url": "https://linkedin.com/company/netflix",
+      "num_employees": 12000,
+      "industry": "Entertainment"
     },
-    "activity_days_ago": 18,
-    "bio": "Data Analyst at Netflix. I query Cassandra daily through Presto for content performance analytics.",
-    "pain_points": []
+    "employment_history": []
   },
   {
     "id": "pool_011",
-    "name": "Ryan O'Brien",
+    "first_name": "Ryan",
+    "last_name": "O.",
+    "name": "Ryan O.",
     "title": "Junior Software Engineer",
-    "company": "Discord",
-    "company_size": 600,
-    "linkedin_url": "https://linkedin.com/in/ryan-obrien-discord",
-    "email": "robrien@discord.com",
-    "location": "San Francisco, CA",
-    "signals": {
-      "datastax_signal": false,
-      "cassandra_usage": true,
-      "datastax_employee_history": false,
-      "recent_cassandra_post": false,
-      "tech_stack_mentions": ["Cassandra", "Elixir", "Rust"]
+    "headline": null,
+    "email": "r.obrien@discord.com",
+    "email_status": "unverified",
+    "linkedin_url": "https://www.linkedin.com/in/ryan-o-discord",
+    "city": "San Francisco",
+    "state": "California",
+    "country": "United States",
+    "seniority": "entry",
+    "departments": ["engineering"],
+    "technologies": ["Apache Cassandra", "Elixir", "Rust"],
+    "organization": {
+      "id": "org_discord",
+      "name": "Discord",
+      "website_url": "https://discord.com",
+      "linkedin_url": "https://linkedin.com/company/discord",
+      "num_employees": 600,
+      "industry": "Technology"
     },
-    "activity_days_ago": 8,
-    "bio": "Junior Software Engineer at Discord, 8 months in. Working on the messages backend which runs on Cassandra. Still getting familiar with the stack.",
-    "pain_points": []
+    "employment_history": [
+      {
+        "id": "emp_011a",
+        "title": "Junior Software Engineer",
+        "organization_name": "Discord",
+        "start_date": "2025-08-01",
+        "end_date": null,
+        "current": true
+      }
+    ]
   },
   {
     "id": "pool_012",
+    "first_name": "Emma",
+    "last_name": "Wilson",
     "name": "Emma Wilson",
-    "title": "DevOps Engineer",
-    "company": "Pivotal Labs",
-    "company_size": 2000,
-    "linkedin_url": "https://linkedin.com/in/emma-wilson-pivotal",
+    "title": "Infrastructure Engineer",
+    "headline": null,
     "email": "emma.wilson@pivotal.io",
-    "location": "New York, NY",
-    "signals": {
-      "datastax_signal": false,
-      "cassandra_usage": true,
-      "datastax_employee_history": false,
-      "recent_cassandra_post": false,
-      "tech_stack_mentions": ["Cassandra", "Kubernetes", "Terraform", "AWS"]
+    "email_status": "verified",
+    "linkedin_url": "https://www.linkedin.com/in/emma-wilson-pivotal",
+    "city": "New York",
+    "state": "New York",
+    "country": "United States",
+    "seniority": "senior",
+    "departments": ["engineering"],
+    "technologies": ["Apache Cassandra", "Kubernetes", "Terraform", "Amazon Web Services"],
+    "organization": {
+      "id": "org_pivotal",
+      "name": "Pivotal Labs",
+      "website_url": "https://pivotal.io",
+      "linkedin_url": "https://linkedin.com/company/pivotal",
+      "num_employees": 2000,
+      "industry": "Technology Consulting"
     },
-    "activity_days_ago": 35,
-    "bio": "DevOps Engineer helping clients deploy and operate Cassandra on Kubernetes. Generalist ops background, not a DB specialist.",
-    "pain_points": []
+    "employment_history": []
   },
   {
     "id": "pool_013",
+    "first_name": "Jake",
+    "last_name": "Turner",
     "name": "Jake Turner",
     "title": "Sales Development Representative",
-    "company": "DataStax",
-    "company_size": 500,
-    "linkedin_url": "https://linkedin.com/in/jake-turner-datastax",
-    "email": "jake.turner@datastax.com",
-    "location": "Austin, TX",
-    "signals": {
-      "datastax_signal": true,
-      "cassandra_usage": false,
-      "datastax_employee_history": false,
-      "recent_cassandra_post": false,
-      "tech_stack_mentions": ["Salesforce", "Outreach", "LinkedIn Sales Navigator"]
+    "headline": "SDR at DataStax | Helping engineering teams modernize their data infrastructure",
+    "email": null,
+    "email_status": null,
+    "linkedin_url": "https://www.linkedin.com/in/jake-turner-datastax",
+    "city": "Austin",
+    "state": "Texas",
+    "country": "United States",
+    "seniority": "entry",
+    "departments": ["sales"],
+    "technologies": ["Salesforce", "Outreach", "LinkedIn Sales Navigator"],
+    "organization": {
+      "id": "org_datastax",
+      "name": "DataStax",
+      "website_url": "https://datastax.com",
+      "linkedin_url": "https://linkedin.com/company/datastax",
+      "num_employees": 500,
+      "industry": "Technology"
     },
-    "activity_days_ago": 2,
-    "bio": "SDR at DataStax. Prospecting into enterprise accounts.",
-    "pain_points": []
+    "employment_history": []
   },
   {
     "id": "pool_014",
+    "first_name": "Mia",
+    "last_name": "Chen",
     "name": "Mia Chen",
     "title": "Marketing Specialist",
-    "company": "Confluent",
-    "company_size": 3500,
-    "linkedin_url": "https://linkedin.com/in/mia-chen-confluent",
+    "headline": null,
     "email": "mia.chen@confluent.io",
-    "location": "Mountain View, CA",
-    "signals": {
-      "datastax_signal": false,
-      "cassandra_usage": false,
-      "datastax_employee_history": false,
-      "recent_cassandra_post": false,
-      "tech_stack_mentions": ["HubSpot", "Marketo", "Salesforce"]
+    "email_status": "verified",
+    "linkedin_url": "https://www.linkedin.com/in/mia-chen-confluent",
+    "city": "Mountain View",
+    "state": "California",
+    "country": "United States",
+    "seniority": "entry",
+    "departments": ["marketing"],
+    "technologies": ["HubSpot", "Marketo", "Salesforce"],
+    "organization": {
+      "id": "org_confluent",
+      "name": "Confluent",
+      "website_url": "https://confluent.io",
+      "linkedin_url": "https://linkedin.com/company/confluent",
+      "num_employees": 3500,
+      "industry": "Technology"
     },
-    "activity_days_ago": 5,
-    "bio": "Marketing Specialist at Confluent running demand gen campaigns for Kafka Cloud.",
-    "pain_points": []
+    "employment_history": [
+      {
+        "id": "emp_014a",
+        "title": "Marketing Specialist",
+        "organization_name": "Confluent",
+        "start_date": "2024-01-01",
+        "end_date": null,
+        "current": true
+      }
+    ]
   },
   {
     "id": "pool_015",
+    "first_name": "Carlos",
+    "last_name": "Rivera",
     "name": "Carlos Rivera",
     "title": "Customer Success Manager",
-    "company": "DataStax",
-    "company_size": 500,
-    "linkedin_url": "https://linkedin.com/in/carlos-rivera-datastax",
-    "email": "carlos.rivera@datastax.com",
-    "location": "San Jose, CA",
-    "signals": {
-      "datastax_signal": true,
-      "cassandra_usage": false,
-      "datastax_employee_history": false,
-      "recent_cassandra_post": false,
-      "tech_stack_mentions": ["Salesforce", "Gainsight", "Jira"]
+    "headline": null,
+    "email": "c.rivera@datastax.com",
+    "email_status": "verified",
+    "linkedin_url": "https://www.linkedin.com/in/carlos-rivera-datastax",
+    "city": "San Jose",
+    "state": "California",
+    "country": "United States",
+    "seniority": "manager",
+    "departments": ["customer_success"],
+    "technologies": ["Salesforce", "Gainsight", "Jira"],
+    "organization": {
+      "id": "org_datastax",
+      "name": "DataStax",
+      "website_url": "https://datastax.com",
+      "linkedin_url": "https://linkedin.com/company/datastax",
+      "num_employees": 500,
+      "industry": "Technology"
     },
-    "activity_days_ago": 9,
-    "bio": "Customer Success Manager at DataStax managing 30 enterprise accounts.",
-    "pain_points": []
+    "employment_history": []
   },
   {
     "id": "pool_016",
+    "first_name": "Sophie",
+    "last_name": "Liu",
     "name": "Sophie Liu",
     "title": "Account Executive",
-    "company": "MongoDB",
-    "company_size": 5000,
-    "linkedin_url": "https://linkedin.com/in/sophie-liu-mongodb",
-    "email": "sophie.liu@mongodb.com",
-    "location": "New York, NY",
-    "signals": {
-      "datastax_signal": false,
-      "cassandra_usage": false,
-      "datastax_employee_history": false,
-      "recent_cassandra_post": false,
-      "tech_stack_mentions": ["Salesforce", "MongoDB Atlas", "Outreach"]
+    "headline": "Account Executive at MongoDB | Helping mid-market teams scale with Atlas",
+    "email": null,
+    "email_status": null,
+    "linkedin_url": "https://www.linkedin.com/in/sophie-liu-mongodb",
+    "city": "New York",
+    "state": "New York",
+    "country": "United States",
+    "seniority": "manager",
+    "departments": ["sales"],
+    "technologies": ["Salesforce", "MongoDB Atlas", "Outreach"],
+    "organization": {
+      "id": "org_mongodb",
+      "name": "MongoDB",
+      "website_url": "https://mongodb.com",
+      "linkedin_url": "https://linkedin.com/company/mongodb",
+      "num_employees": 5000,
+      "industry": "Technology"
     },
-    "activity_days_ago": 3,
-    "bio": "Account Executive at MongoDB selling Atlas into mid-market.",
-    "pain_points": []
+    "employment_history": []
   },
   {
     "id": "pool_017",
-    "name": "Ben Foster",
+    "first_name": "Ben",
+    "last_name": "F.",
+    "name": "Ben F.",
     "title": "Software Engineering Intern",
-    "company": "CloudBase Technologies",
-    "company_size": 120,
-    "linkedin_url": "https://linkedin.com/in/ben-foster-intern",
-    "email": "ben.foster@cloudbase.io",
-    "location": "Boston, MA",
-    "signals": {
-      "datastax_signal": false,
-      "cassandra_usage": true,
-      "datastax_employee_history": false,
-      "recent_cassandra_post": false,
-      "tech_stack_mentions": ["Cassandra", "Python", "Docker"]
+    "headline": null,
+    "email": "b.foster@cloudbase.io",
+    "email_status": "unverified",
+    "linkedin_url": "https://www.linkedin.com/in/ben-f-intern",
+    "city": "Boston",
+    "state": "Massachusetts",
+    "country": "United States",
+    "seniority": "entry",
+    "departments": ["engineering"],
+    "technologies": ["Apache Cassandra", "Python", "Docker"],
+    "organization": {
+      "id": "org_cloudbase",
+      "name": "CloudBase Technologies",
+      "website_url": "https://cloudbase.io",
+      "linkedin_url": "https://linkedin.com/company/cloudbase-technologies",
+      "num_employees": 120,
+      "industry": "Technology"
     },
-    "activity_days_ago": 12,
-    "bio": "Summer intern at CloudBase. Working on a Cassandra-backed microservice as my project.",
-    "pain_points": []
+    "employment_history": []
   },
   {
     "id": "pool_018",
+    "first_name": "Rachel",
+    "last_name": "Kim",
     "name": "Rachel Kim",
     "title": "HR Generalist",
-    "company": "Confluent",
-    "company_size": 3500,
-    "linkedin_url": "https://linkedin.com/in/rachel-kim-confluent",
+    "headline": null,
     "email": "rachel.kim@confluent.io",
-    "location": "Mountain View, CA",
-    "signals": {
-      "datastax_signal": false,
-      "cassandra_usage": false,
-      "datastax_employee_history": false,
-      "recent_cassandra_post": false,
-      "tech_stack_mentions": ["Workday", "Greenhouse", "BambooHR"]
+    "email_status": "verified",
+    "linkedin_url": "https://www.linkedin.com/in/rachel-kim-confluent",
+    "city": "Mountain View",
+    "state": "California",
+    "country": "United States",
+    "seniority": "entry",
+    "departments": ["human_resources"],
+    "technologies": ["Workday", "Greenhouse", "BambooHR"],
+    "organization": {
+      "id": "org_confluent",
+      "name": "Confluent",
+      "website_url": "https://confluent.io",
+      "linkedin_url": "https://linkedin.com/company/confluent",
+      "num_employees": 3500,
+      "industry": "Technology"
     },
-    "activity_days_ago": 7,
-    "bio": "HR Generalist at Confluent supporting engineering teams with hiring and onboarding.",
-    "pain_points": []
+    "employment_history": []
   },
   {
     "id": "pool_019",
+    "first_name": "Daniel",
+    "last_name": "Park",
     "name": "Daniel Park",
     "title": "Talent Acquisition Specialist",
-    "company": "DataStax",
-    "company_size": 500,
-    "linkedin_url": "https://linkedin.com/in/daniel-park-datastax",
-    "email": "daniel.park@datastax.com",
-    "location": "Austin, TX",
-    "signals": {
-      "datastax_signal": true,
-      "cassandra_usage": false,
-      "datastax_employee_history": false,
-      "recent_cassandra_post": false,
-      "tech_stack_mentions": ["Greenhouse", "LinkedIn Recruiter", "Lever"]
+    "headline": "Talent Acquisition at DataStax | Hiring engineers who love distributed systems",
+    "email": null,
+    "email_status": null,
+    "linkedin_url": "https://www.linkedin.com/in/daniel-park-datastax",
+    "city": "Austin",
+    "state": "Texas",
+    "country": "United States",
+    "seniority": "entry",
+    "departments": ["human_resources"],
+    "technologies": ["Greenhouse", "LinkedIn Recruiter", "Lever"],
+    "organization": {
+      "id": "org_datastax",
+      "name": "DataStax",
+      "website_url": "https://datastax.com",
+      "linkedin_url": "https://linkedin.com/company/datastax",
+      "num_employees": 500,
+      "industry": "Technology"
     },
-    "activity_days_ago": 4,
-    "bio": "Talent Acquisition Specialist at DataStax, focused on engineering roles.",
-    "pain_points": []
+    "employment_history": []
   },
   {
     "id": "pool_020",
+    "first_name": "Natalie",
+    "last_name": "Wong",
     "name": "Natalie Wong",
     "title": "Content Marketing Manager",
-    "company": "Amazon Web Services",
-    "company_size": 80000,
-    "linkedin_url": "https://linkedin.com/in/natalie-wong-aws",
-    "email": "natalie.wong@amazon.com",
-    "location": "Seattle, WA",
-    "signals": {
-      "datastax_signal": false,
-      "cassandra_usage": false,
-      "datastax_employee_history": false,
-      "recent_cassandra_post": false,
-      "tech_stack_mentions": ["WordPress", "HubSpot", "Adobe Creative Suite"]
+    "headline": null,
+    "email": "n.wong@amazon.com",
+    "email_status": "verified",
+    "linkedin_url": "https://www.linkedin.com/in/natalie-wong-aws",
+    "city": "Seattle",
+    "state": "Washington",
+    "country": "United States",
+    "seniority": "manager",
+    "departments": ["marketing"],
+    "technologies": ["WordPress", "HubSpot", "Adobe Creative Suite"],
+    "organization": {
+      "id": "org_aws",
+      "name": "Amazon Web Services",
+      "website_url": "https://aws.amazon.com",
+      "linkedin_url": "https://linkedin.com/company/amazon-web-services",
+      "num_employees": 80000,
+      "industry": "Cloud Computing"
     },
-    "activity_days_ago": 6,
-    "bio": "Content Marketing Manager at AWS writing about database services.",
-    "pain_points": []
+    "employment_history": []
   }
 ]

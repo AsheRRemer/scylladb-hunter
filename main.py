@@ -3,11 +3,12 @@ import logging
 import yaml
 
 from hunter.db import Database
+from hunter.enricher import enrich
 from hunter.lead_finder import load_leads
 from hunter.personalizer import generate_message
 from hunter.reporter import generate_report
-from hunter.scorer import score_lead
-from hunter.trigger import log_outreach
+from hunter.scorer import decide, score_lead
+from hunter.trigger import run_sequence
 
 logging.basicConfig(
     level=logging.INFO,
@@ -23,7 +24,6 @@ def main():
 
     pipeline = cfg["pipeline"]
     scoring = cfg["scoring"]
-    anthropic_cfg = cfg["anthropic"]
     output = cfg["output"]
 
     db = Database(output["db_file"])
@@ -32,69 +32,46 @@ def main():
     logger.info("=== STAGE 1: GATHER ===")
     qualified, all_leads = load_leads(cfg, db)
 
+    # ── 1.5. Enrich ──────────────────────────────────────────────────────────
+    logger.info("=== STAGE 1.5: ENRICH ===")
+    qualified = enrich(qualified, cfg, pipeline["dry_run"])
+    for lead in qualified:
+        db.update_lead_enrichment(lead)
+
     # ── 2. Score ─────────────────────────────────────────────────────────────
     logger.info("=== STAGE 2: SCORE ===")
+    icp_threshold = pipeline["min_score_threshold"]
+    confidence_threshold = scoring.get("confidence_threshold", 70)
     for lead in qualified:
-        score, breakdown = score_lead(lead, scoring)
-        db.update_lead_score(lead["id"], score, breakdown)
-        lead["score"] = score
+        icp_score, confidence_score, breakdown = score_lead(lead, scoring)
+        decision = decide(icp_score, confidence_score, icp_threshold, confidence_threshold)
+        db.update_lead_score(lead["id"], icp_score, confidence_score, decision, breakdown)
+        lead["score"] = icp_score
+        lead["confidence_score"] = confidence_score
+        lead["decision"] = decision
         lead["score_breakdown"] = breakdown
+        icp = breakdown["icp"]
         logger.info(
-            "  %-32s %-22s → %5.1f  (title:%.0f size:%.0f signal:%.0f recency:%.0f)",
-            lead["name"],
-            lead["company"],
-            score,
-            breakdown["title"],
-            breakdown["company_size"],
-            breakdown["datastax_signal"],
-            breakdown["activity_recency"],
+            "  %-32s %-22s → icp:%5.1f  conf:%5.1f  [%s]",
+            lead["name"], lead["company"],
+            icp_score, confidence_score, decision,
+        )
+        logger.info(
+            "    title:%.0f size:%.0f signal:%.0f recency:%.0f",
+            icp["title"], icp["company_size"], icp["datastax_signal"], icp["activity_recency"],
         )
 
-    # ── 3. Select ─────────────────────────────────────────────────────────────
-    threshold = pipeline["min_score_threshold"]
-    selected = [l for l in qualified if l["score"] >= threshold]
-    pre_filtered = len(all_leads) - len(qualified)
-    below_threshold = len(qualified) - len(selected)
-    logger.info(
-        "=== STAGE 3: SELECT === %d selected  (%d pre-filtered, %d below threshold %.0f)",
-        len(selected),
-        pre_filtered,
-        below_threshold,
-        threshold,
-    )
-    for lead in selected:
-        db.update_lead_status(lead["id"], "selected")
-
-    # ── 4. Personalize & Trigger ──────────────────────────────────────────────
+    # ── 3+4. Sequence engine ──────────────────────────────────────────────────
     dry_run = pipeline["dry_run"]
-    mode_label = "DRY RUN" if dry_run else "LIVE"
-    logger.info("=== STAGE 4: PERSONALIZE & TRIGGER [%s] ===", mode_label)
-
-    for lead in selected:
-        for message_type in pipeline["message_types"]:
-            logger.info("  Generating %s for %s…", message_type, lead["name"])
-            try:
-                message = generate_message(
-                    lead,
-                    message_type,
-                    anthropic_cfg["model"],
-                    anthropic_cfg["max_tokens"],
-                )
-            except Exception as exc:
-                logger.error("  Failed to generate message: %s", exc)
-                continue
-
-            log_outreach(
-                lead,
-                message_type,
-                message,
-                lead["score"],
-                output["log_file"],
-                db,
-                dry_run,
-            )
-
-        db.update_lead_status(lead["id"], "messaged")
+    logger.info("=== STAGE 3+4: SEQUENCE ENGINE [%s] ===", "DRY RUN" if dry_run else "LIVE")
+    stats = run_sequence(qualified, cfg, db, generate_message, dry_run)
+    logger.info(
+        "  %d evaluated → %d qualified → %d steps executed, %d skipped",
+        stats["evaluated"],
+        stats["qualified"],
+        stats["steps_executed"],
+        stats["steps_skipped"],
+    )
 
     # ── 5. Report ─────────────────────────────────────────────────────────────
     logger.info("=== STAGE 5: REPORT ===")
@@ -106,8 +83,8 @@ def main():
         "Pipeline complete. %d gathered → %d scored → %d selected → %d messaged",
         len(all_leads),
         len(qualified),
-        len(selected),
-        len(selected),
+        stats["qualified"],
+        stats["qualified"],
     )
     logger.info("Outputs:")
     logger.info("  Report  → %s", output["report_file"])

@@ -1,0 +1,26 @@
+[
+  {
+    "lead_id": "apollo_pool_002",
+    "first_name": "Lin",
+    "last_name": "Zhao",
+    "domain": "comcast.com",
+    "email": "l.zhao@comcast.com",
+    "score": 94
+  },
+  {
+    "lead_id": "apollo_pool_004",
+    "first_name": "Omar",
+    "last_name": "Al-Farsi",
+    "domain": "netflix.com",
+    "email": "o.alfarsi@netflix.com",
+    "score": 78
+  },
+  {
+    "lead_id": "apollo_pool_008",
+    "first_name": "Wei",
+    "last_name": "Zhang",
+    "domain": "grab.com",
+    "email": "w.zhang@grab.com",
+    "score": 85
+  }
+]

@@ -1,6 +1,8 @@
 import json
 import logging
 import os
+import re
+from datetime import datetime
 
 import requests
 
@@ -41,6 +43,30 @@ def _pre_qualify(lead: dict) -> bool:
     )
 
 
+def _extract_domain(website_url: str) -> str:
+    if not website_url:
+        return ""
+    m = re.search(r'(?:https?://)?(?:www\.)?([^/\s]+)', website_url)
+    return m.group(1) if m else ""
+
+
+def _calc_tenure(employment: list):
+    """Returns (tenure_months | None, confidence: known/partial/unknown)."""
+    current = next((e for e in employment if e.get("current")), None)
+    if not current:
+        return None, "unknown"
+    start_str = current.get("start_date")
+    if not start_str:
+        return None, "partial"
+    try:
+        start = datetime.strptime(start_str[:7], "%Y-%m")
+        now = datetime.now()
+        months = (now.year - start.year) * 12 + (now.month - start.month)
+        return max(0, months), "known"
+    except ValueError:
+        return None, "partial"
+
+
 def _normalize_apollo_person(person: dict) -> dict:
     """Map a raw Apollo API person record to our internal lead schema."""
     org = person.get("organization") or {}
@@ -57,26 +83,58 @@ def _normalize_apollo_person(person: dict) -> dict:
         for e in employment
         if not e.get("current")
     )
+    tenure_months, tenure_conf = _calc_tenure(employment)
 
+    techs = person.get("technologies") or []
+    techs_lower = [t.lower() for t in techs]
+    cassandra_from_tech = any("cassandra" in t for t in techs_lower)
+    datastax_from_tech = any("datastax" in t for t in techs_lower)
+    _TECH_KEYWORDS = {"cassandra", "datastax", "kafka", "redis", "mongodb", "elasticsearch", "scylla", "spark"}
+    tech_stack_mentions = [t for t in techs if any(kw in t.lower() for kw in _TECH_KEYWORDS)]
+
+    email_val = person.get("email")
+    email_status = (person.get("email_status") or "").lower()
+    if email_val and email_status == "verified":
+        email_conf = "high"
+    elif email_val and email_status in ("guessed", "likely"):
+        email_conf = "low"
+    elif email_val:
+        email_conf = "medium"
+    else:
+        email_conf = "none"
+
+    bio_conf = "high" if person.get("headline") else "none"
+
+    person_id = person.get("id", "unknown")
     return {
-        "id": f"apollo_{person['id']}",
+        "id": f"apollo_{person_id}",
+        "first_name": person.get("first_name", ""),
+        "last_name": person.get("last_name", ""),
         "name": person.get("name", "Unknown"),
         "title": person.get("title", ""),
         "company": org.get("name", "Unknown"),
         "company_size": org.get("num_employees") or 0,
+        "domain": _extract_domain(org.get("website_url", "")),
+        "seniority": person.get("seniority", ""),
         "linkedin_url": person.get("linkedin_url"),
-        "email": person.get("email"),
+        "email": email_val,
         "location": location,
         "signals": {
-            "datastax_signal": datastax_at_current_org,
-            "cassandra_usage": False,       # not surfaced by Apollo; add enrichment layer to fill this
+            "datastax_signal": datastax_at_current_org or datastax_from_tech,
+            "cassandra_usage": cassandra_from_tech,
             "datastax_employee_history": ds_alumni,
-            "recent_cassandra_post": False,  # not surfaced by Apollo
-            "tech_stack_mentions": [],
+            "recent_cassandra_post": False,
+            "tech_stack_mentions": tech_stack_mentions,
         },
-        "activity_days_ago": 30,  # Apollo free tier omits activity timestamps; default to 30
+        "activity_days_ago": 30,
         "bio": person.get("headline") or "",
         "pain_points": [],
+        "tenure_months": tenure_months,
+        "field_confidence": {
+            "email": email_conf,
+            "bio": bio_conf,
+            "tenure": tenure_conf,
+        },
     }
 
 
@@ -118,9 +176,9 @@ def _fetch_from_apollo(cfg: dict) -> list[dict]:
 
 def _load_from_pool(pool_path: str) -> list[dict]:
     with open(pool_path) as f:
-        leads = json.load(f)
-    logger.info("Loaded %d raw leads from %s", len(leads), pool_path)
-    return leads
+        raw = json.load(f)
+    logger.info("Loaded %d raw leads from %s", len(raw), pool_path)
+    return [_normalize_apollo_person(p) for p in raw]
 
 
 def load_leads(cfg: dict, db: Database) -> tuple[list[dict], list[dict]]:
@@ -144,11 +202,17 @@ def load_leads(cfg: dict, db: Database) -> tuple[list[dict], list[dict]]:
 
     all_leads = raw[:max_leads]
 
-    for lead in all_leads:
+    messaged_ids = db.get_messaged_lead_ids()
+    new_leads = [l for l in all_leads if l["id"] not in messaged_ids]
+    already_messaged = len(all_leads) - len(new_leads)
+    if already_messaged:
+        logger.info("Dedup: skipped %d lead(s) already messaged in a previous run", already_messaged)
+
+    for lead in new_leads:
         db.upsert_lead(lead)
 
-    qualified = [l for l in all_leads if _pre_qualify(l)]
-    disqualified = [l for l in all_leads if not _pre_qualify(l)]
+    qualified = [l for l in new_leads if _pre_qualify(l)]
+    disqualified = [l for l in new_leads if not _pre_qualify(l)]
 
     for lead in disqualified:
         db.update_lead_status(lead["id"], "disqualified")
@@ -157,7 +221,7 @@ def load_leads(cfg: dict, db: Database) -> tuple[list[dict], list[dict]]:
     logger.info(
         "Pre-qualification: %d/%d passed  (%d disqualified by title)",
         len(qualified),
-        len(all_leads),
+        len(new_leads),
         len(disqualified),
     )
     return qualified, all_leads

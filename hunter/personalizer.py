@@ -37,17 +37,32 @@ def generate_message(lead: dict, message_type: str, model: str, max_tokens: int)
     tech_stack = signals.get("tech_stack_mentions", [])
     pain_points = lead.get("pain_points", [])
 
-    if message_type == "linkedin_dm":
+    if message_type == "linkedin_connection":
+        format_instructions = (
+            "Write a LinkedIn connection request note. "
+            "Hard limit: 250 characters (LinkedIn enforces this). "
+            "Do NOT pitch the product — just establish why you're reaching out. "
+            "Reference their specific role or company. Human and direct."
+        )
+    elif message_type == "linkedin_dm":
         format_instructions = (
             "Write a LinkedIn DM. Max 150 words. No subject line. "
             "Peer-to-peer tone, not marketing copy. "
             "End with one specific, low-friction CTA (e.g., '15-min call', 'benchmark together')."
         )
-    else:
+    elif message_type == "email_followup":
+        format_instructions = (
+            "Write a follow-up email to a previous outreach that received no reply. "
+            "Start with 'Subject: <subject line>' then a blank line then the body. "
+            "Body max 100 words. Acknowledge this is a follow-up without being apologetic. "
+            "Lead with a new data point or different angle — not a copy of the first email. "
+            "Single low-friction CTA. Do NOT mention ScyllaDB in the subject line."
+        )
+    else:  # email
         format_instructions = (
             "Write an email. Start with 'Subject: <subject line>' then a blank line then the body. "
             "Body max 200 words. Professional but human tone. "
-            "End with one specific, low-friction CTA."
+            "End with one specific, low-friction CTA. Do NOT mention ScyllaDB in the subject line."
         )
 
     prompt = f"""You are a ScyllaDB GTM engineer reaching out to a qualified prospect.
@@ -67,7 +82,7 @@ Task: {format_instructions}
 Rules:
 - Reference 1–2 differentiators most relevant to THIS person's specific pain points
 - Mention their company or role context at least once to show it's not a blast
-- Do NOT mention ScyllaDB's name in the subject line (too salesy)
+- Do NOT use em dashes (—) anywhere in the message
 - Output ONLY the message, no preamble or explanation"""
 
     response = client.messages.create(
