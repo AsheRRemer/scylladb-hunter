@@ -83,6 +83,7 @@ Rules:
 - Reference 1–2 differentiators most relevant to THIS person's specific pain points
 - Mention their company or role context at least once to show it's not a blast
 - Do NOT use em dashes (—) anywhere in the message
+- Sign off emails and DMs with "Best,\nAsher" — never use placeholders like [Your name]
 - Output ONLY the message, no preamble or explanation"""
 
     response = client.messages.create(
