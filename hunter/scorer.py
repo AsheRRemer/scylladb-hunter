@@ -19,7 +19,7 @@ TITLE_SENIORITY_MAP = {
 }
 
 _EMAIL_CONF_SCORES  = {"high": 100, "medium": 60,  "low": 30,  "none": 0}
-_BIO_CONF_SCORES    = {"high": 100, "inferred": 50, "none": 0}
+_BIO_CONF_SCORES    = {"high": 100, "medium": 70, "inferred": 50, "none": 0}
 _TENURE_CONF_SCORES = {"known": 100, "partial": 50, "unknown": 0}
 
 

@@ -26,14 +26,8 @@ def _simulate(lead_id: str, event: str, rate: float) -> bool:
 def _append_log(entry: dict, log_path: str):
     log_file = Path(log_path)
     log_file.parent.mkdir(parents=True, exist_ok=True)
-    existing: list[dict] = []
-    if log_file.exists():
-        try:
-            existing = json.loads(log_file.read_text())
-        except json.JSONDecodeError:
-            existing = []
-    existing.append(entry)
-    log_file.write_text(json.dumps(existing, indent=2))
+    with log_file.open("a") as f:
+        f.write(json.dumps(entry) + "\n")
 
 
 def _log_entry(lead: dict, step_def: dict, score: float, dry_run: bool,
@@ -102,6 +96,7 @@ def run_sequence(
         # log_contact(cfg, lead)
 
         enrich_first = decision == "enrich_first"
+        already_sent = db.get_sent_step_numbers(lead["id"])
         linkedin_accepted = _simulate(lead["id"], "linkedin_accepted", linkedin_accept_rate)
         email_replied = _simulate(lead["id"], "email_replied", email_reply_rate)
 
@@ -121,7 +116,9 @@ def run_sequence(
             message_type = step_def["message_type"]
 
             skip_reason = None
-            if enrich_first and step > 1:
+            if step in already_sent:
+                skip_reason = f"Step {step} already sent in a previous run"
+            elif enrich_first and step > 1:
                 skip_reason = "Flagged enrich_first — awaiting enrichment before email outreach"
             elif step == 2 and linkedin_accepted:
                 skip_reason = "LinkedIn connection accepted (simulated Day 1) — email not needed"
@@ -164,6 +161,7 @@ def run_sequence(
             #     log_outbound_email(cfg, lead, subject="", body=message)
             stats["steps_executed"] += 1
 
-        db.update_lead_status(lead["id"], "messaged")
+        final_status = "linkedin_sent" if enrich_first else "messaged"
+        db.update_lead_status(lead["id"], final_status)
 
     return stats

@@ -63,19 +63,6 @@ class Database:
         self.conn.commit()
 
     def _migrate(self):
-        self.conn.executescript("""
-            CREATE TABLE IF NOT EXISTS responses (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                lead_id TEXT NOT NULL,
-                message_id INTEGER,
-                channel TEXT NOT NULL,
-                sentiment TEXT NOT NULL,
-                response_text TEXT,
-                received_at TEXT DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (lead_id) REFERENCES leads(id),
-                FOREIGN KEY (message_id) REFERENCES messages(id)
-            );
-        """)
         for stmt in [
             "ALTER TABLE messages ADD COLUMN step INTEGER",
             "ALTER TABLE messages ADD COLUMN scheduled_day INTEGER",
@@ -91,10 +78,20 @@ class Database:
         self.conn.commit()
 
     def get_messaged_lead_ids(self) -> set:
+        """Returns IDs of leads that completed the full sequence — skipped on re-runs.
+        linkedin_sent leads are intentionally excluded so they can receive email steps."""
         rows = self.conn.execute(
             "SELECT id FROM leads WHERE status = 'messaged'"
         ).fetchall()
         return {row["id"] for row in rows}
+
+    def get_sent_step_numbers(self, lead_id: str) -> set:
+        """Returns step numbers already in the messages table for this lead."""
+        rows = self.conn.execute(
+            "SELECT step FROM messages WHERE lead_id = ? AND step IS NOT NULL",
+            (lead_id,),
+        ).fetchall()
+        return {row["step"] for row in rows}
 
     def upsert_lead(self, lead: dict):
         self.conn.execute(
@@ -143,8 +140,9 @@ class Database:
                           confidence_score: float, decision: str, breakdown: dict):
         self.conn.execute(
             """UPDATE leads
-               SET score = ?, confidence_score = ?, decision = ?,
-                   score_breakdown = ?, status = 'scored'
+               SET score = ?, confidence_score = ?, decision = ?, score_breakdown = ?,
+                   status = CASE WHEN status NOT IN ('linkedin_sent', 'messaged')
+                                 THEN 'scored' ELSE status END
                WHERE id = ?""",
             (icp_score, confidence_score, decision, json.dumps(breakdown), lead_id),
         )

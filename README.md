@@ -106,6 +106,10 @@ Runs a deterministic simulated outbound sequence for each qualifying lead:
 
 Simulation outcomes (LinkedIn accept rate, email reply rate) are deterministic by lead ID so results are reproducible across runs.
 
+#### enrich_first re-queue
+
+`enrich_first` leads are marked `linkedin_sent` (not `messaged`) after step 1. This means deduplication does not skip them on subsequent runs — only fully-messaged leads are skipped. If a re-run finds a better email or bio (raising confidence above the threshold), the scorer re-routes the lead to `selected`, the sequence engine skips step 1 (already in the messages table) and sends steps 2 and 3, then marks the lead `messaged`.
+
 ### Stage 5 — Report
 
 Generates `output/report.html` with:
@@ -179,6 +183,12 @@ apollo:
 hubspot:
   api_key: ""                # or set HUBSPOT_API_KEY env var
 ```
+
+---
+
+## Known Limitations
+
+- **Activity recency**: `activity_days_ago` is hardcoded to 30 for all Apollo leads since the free-tier API does not return activity timestamps. The `activity_recency_weight` is set to `0.00` in `config.yaml` until real data is available.
 
 ---
 

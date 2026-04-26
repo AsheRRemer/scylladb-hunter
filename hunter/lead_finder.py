@@ -103,7 +103,7 @@ def _normalize_apollo_person(person: dict) -> dict:
     else:
         email_conf = "none"
 
-    bio_conf = "high" if person.get("headline") else "none"
+    bio_conf = "medium" if person.get("headline") else "none"
 
     person_id = person.get("id", "unknown")
     return {

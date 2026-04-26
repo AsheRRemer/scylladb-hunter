@@ -27,7 +27,7 @@ def generate_report(db: Database, output_path: str):
 
     gathered = len(leads)
     scored = sum(1 for l in leads if l.get("score") is not None)
-    selected = sum(1 for l in leads if l.get("status") in ("selected", "messaged"))
+    selected = sum(1 for l in leads if l.get("status") in ("selected", "messaged", "linkedin_sent"))
     messaged = sum(1 for l in leads if l.get("status") == "messaged")
 
     html = _render_html(leads, gathered, scored, selected, messaged)
@@ -49,11 +49,12 @@ def _score_color(score) -> str:
 
 def _status_pill(status: str) -> str:
     colors = {
-        "messaged": ("rgba(34,197,94,0.15)", "#4ade80"),
-        "selected": ("rgba(251,191,36,0.15)", "#fbbf24"),
-        "scored": ("rgba(148,163,184,0.15)", "#94a3b8"),
-        "gathered": ("rgba(148,163,184,0.10)", "#64748b"),
-        "disqualified": ("rgba(239,68,68,0.12)", "#f87171"),
+        "messaged":      ("rgba(34,197,94,0.15)",  "#4ade80"),
+        "linkedin_sent": ("rgba(99,179,237,0.15)", "#63b3ed"),
+        "selected":      ("rgba(251,191,36,0.15)", "#fbbf24"),
+        "scored":        ("rgba(148,163,184,0.15)","#94a3b8"),
+        "gathered":      ("rgba(148,163,184,0.10)","#64748b"),
+        "disqualified":  ("rgba(239,68,68,0.12)",  "#f87171"),
     }
     bg, fg = colors.get(status, ("rgba(148,163,184,0.1)", "#94a3b8"))
     return (

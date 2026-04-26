@@ -17,7 +17,7 @@ scoring:
   title_seniority_weight: 0.35
   company_size_weight: 0.20
   datastax_signal_weight: 0.40
-  activity_recency_weight: 0.05
+  activity_recency_weight: 0.00  # zeroed until real activity timestamps are available from Apollo
   confidence_threshold: 70
 
 apollo:
@@ -43,6 +43,9 @@ apollo:
 data:
   raw_pool: data/leads_raw_pool.json
   hunter_pool: data/hunter_email_pool.json
+
+hunter:
+  api_key: ""  # or set HUNTER_API_KEY env var
 
 hubspot:
   api_key: ""  # or set HUBSPOT_API_KEY env var
